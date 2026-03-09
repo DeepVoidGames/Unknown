@@ -6,7 +6,7 @@ import { CollectionTab } from "@/components/game/CollectionTab";
 import { Footer } from "@/components/game/Footer";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Package, Map } from "lucide-react";
+import { Package, Map, Beaker } from "lucide-react";
 import { toast } from "sonner";
 
 const MAX_OFFLINE_SECONDS = 24 * 60 * 60; // 24h
@@ -34,7 +34,11 @@ const Index = () => {
         (c) => !state.activeSlots.some((s) => s?.id === c.id),
       ).length;
       const bonus = 1 + inactiveCards / 100;
-      const earned = Math.floor(activeIncome * bonus * elapsed);
+      
+      // Apply Upgrade Multiplier (5% per level)
+      const upgradeBonus = 1 + (state.upgrades.seeds * 0.05);
+      
+      const earned = Math.floor(activeIncome * bonus * upgradeBonus * elapsed);
       if (earned > 0) {
         state.updateSeeds(earned);
         toast.success(`Welcome back!`, {
@@ -56,7 +60,11 @@ const Index = () => {
         (c) => !state.activeSlots.some((s) => s?.id === c.id),
       ).length;
       const bonus = 1 + inactiveCards / 100;
-      const earned = activeIncome * bonus;
+      
+      // Apply Upgrade Multiplier (5% per level)
+      const upgradeBonus = 1 + (state.upgrades.seeds * 0.05);
+      
+      const earned = activeIncome * bonus * upgradeBonus;
       if (earned > 0) {
         state.updateSeeds(earned);
       }
@@ -69,14 +77,14 @@ const Index = () => {
       <Header />
       <PortalArea />
 
-      <div className="flex justify-center py-6 bg-muted/20 border-y border-border gap-4">
+      <div className="flex justify-center py-6 bg-muted/20 border-y border-border gap-4 flex-wrap">
         <Link to="/packs">
           <Button
             size="lg"
             className="font-display font-bold gap-3 px-8 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all"
           >
             <Package className="w-5 h-5" />
-            Go to Portal Shop
+            Portal Shop
           </Button>
         </Link>
         <Link to="/dimension">
@@ -86,7 +94,17 @@ const Index = () => {
             className="font-display font-bold gap-3 px-8 shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all"
           >
             <Map className="w-5 h-5" />
-            Go to Dimension
+            Dimension Rift
+          </Button>
+        </Link>
+        <Link to="/upgrades">
+          <Button
+            variant="outline"
+            size="lg"
+            className="font-display font-bold gap-3 px-8 shadow-lg hover:bg-primary/5 transition-all border-primary/20"
+          >
+            <Beaker className="w-5 h-5 text-primary" />
+            Rick's Lab
           </Button>
         </Link>
       </div>

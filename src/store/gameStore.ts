@@ -34,6 +34,10 @@ interface GameState {
   dimensionLevel: number;
   maxDimensionLevel: number;
   isDimensionActive: boolean;
+  upgrades: {
+    seeds: number;
+    power: number;
+  };
   lastSaved: number;
   addCard: (card: GameCard) => boolean;
   addCards: (cards: GameCard[]) => boolean;
@@ -47,6 +51,8 @@ interface GameState {
   startDimension: () => boolean;
   nextDimensionLevel: () => { bonus: number, milestoneUnlocked: string | null };
   resetDimension: (reward: number) => void;
+  buyUpgrade: (type: 'seeds' | 'power') => boolean;
+  getUpgradeCost: (type: 'seeds' | 'power') => number;
   hardReset: () => void;
   setLastSaved: (ts: number) => void;
 }
@@ -72,8 +78,6 @@ const generateCard = (
   const baseType = cardTypes.find(t => t.id === baseTypeId);
   const selectedTypes = [baseTypeId];
 
-  // COMBINATION LOGIC
-  // Full Art combines with almost everything. Silver, Gold, Revert, Holo only with Full Art.
   if (baseType?.canCombine && Math.random() < combineChance) {
     const validExtraTypes = (baseType as any).combinesWith || [];
     if (validExtraTypes.length > 0) {
@@ -119,6 +123,10 @@ export const useGameStore = create<GameState>()(
       dimensionLevel: 1,
       maxDimensionLevel: 1,
       isDimensionActive: false,
+      upgrades: {
+        seeds: 0,
+        power: 0,
+      },
       lastSaved: Date.now(),
 
       addCard: (card) => {
@@ -229,12 +237,10 @@ export const useGameStore = create<GameState>()(
         let bonus = 0;
         let milestoneUnlocked = null;
         
-        // Every 5 levels reward bonus seeds
         if ((dimensionLevel + 1) % 5 === 0) {
           bonus = (dimensionLevel + 1) * 200;
         }
 
-        // Check for specific milestones
         const nextLvl = dimensionLevel + 1;
         if (nextLvl === 10) milestoneUnlocked = "Mega Portal";
         if (nextLvl === 25) milestoneUnlocked = "Silver Rift";
@@ -262,6 +268,38 @@ export const useGameStore = create<GameState>()(
         }));
       },
 
+      getUpgradeCost: (type) => {
+        const { upgrades } = get();
+        const level = upgrades[type];
+        const baseCost = type === 'seeds' ? 500 : 800;
+        
+        // Exponential growth: base * 1.5^level. 
+        // Significant jump every 10 levels (multiplier * 5)
+        let cost = baseCost * Math.pow(1.6, level);
+        const jumps = Math.floor(level / 10);
+        if (jumps > 0) {
+           cost = cost * Math.pow(5, jumps);
+        }
+        
+        return Math.floor(cost);
+      },
+
+      buyUpgrade: (type) => {
+        const cost = get().getUpgradeCost(type);
+        const { seeds, upgrades } = get();
+        
+        if (seeds < cost) return false;
+        
+        set((s) => ({
+          seeds: s.seeds - cost,
+          upgrades: {
+            ...s.upgrades,
+            [type]: s.upgrades[type] + 1
+          }
+        }));
+        return true;
+      },
+
       hardReset: () => {
         set({
           seeds: 100,
@@ -271,6 +309,7 @@ export const useGameStore = create<GameState>()(
           dimensionLevel: 1,
           maxDimensionLevel: 1,
           isDimensionActive: false,
+          upgrades: { seeds: 0, power: 0 },
           lastSaved: Date.now(),
         });
         const starter = generateCard({ "COMMON": 0.8, "RARE": 0.2, "HOLO": 0, "FULL_ART": 0 }, 0);
@@ -287,7 +326,8 @@ export const useGameStore = create<GameState>()(
           return {
             ...persistedState,
             inventory: [],
-            activeSlots: [null, null, null, null]
+            activeSlots: [null, null, null, null],
+            upgrades: { seeds: 0, power: 0 }
           };
         }
         return persistedState;

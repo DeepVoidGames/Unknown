@@ -8,6 +8,7 @@ import Collection from "./pages/Collection";
 import Packs from "./pages/Packs";
 import Settings from "./pages/Settings";
 import Dimension from "./pages/Dimension";
+import Upgrades from "./pages/Upgrades";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/packs" element={<Packs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/dimension" element={<Dimension />} />
+          <Route path="/upgrades" element={<Upgrades />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

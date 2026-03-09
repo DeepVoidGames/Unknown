@@ -1,5 +1,5 @@
 import { useGameStore } from '@/store/gameStore';
-import { Leaf, TrendingUp, Settings } from 'lucide-react';
+import { Leaf, TrendingUp, Settings, Beaker, Library } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -7,6 +7,7 @@ export function Header() {
   const seeds = useGameStore((s) => s.seeds);
   const activeSlots = useGameStore((s) => s.activeSlots);
   const inventory = useGameStore((s) => s.inventory);
+  const upgrades = useGameStore((s) => s.upgrades);
 
   const activeIncome = activeSlots.reduce(
     (sum, slot) => sum + (slot?.income ?? 0),
@@ -16,8 +17,12 @@ export function Header() {
   const inactiveCards = inventory.filter(
     (c) => !activeSlots.some((s) => s?.id === c.id)
   ).length;
+  
   const collectionBonus = inactiveCards; // +1% per inactive card
-  const totalIncome = activeIncome * (1 + collectionBonus / 100);
+  const labBonus = (upgrades.seeds || 0) * 5; // +5% per upgrade level
+  
+  const totalMultiplier = (1 + collectionBonus / 100) * (1 + labBonus / 100);
+  const totalIncome = activeIncome * totalMultiplier;
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/60 backdrop-blur-md">
@@ -33,19 +38,32 @@ export function Header() {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="text-right">
-          <p className="text-xs text-muted-foreground font-body">Income</p>
-          <p className="text-lg font-display font-bold text-primary flex items-center gap-1">
-            <TrendingUp className="w-4 h-4" />
-            +{totalIncome.toFixed(1)}/s
-          </p>
+      <div className="flex items-center gap-4">
+        <div className="flex flex-col items-end gap-1">
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground font-body">Total Income</p>
+            <p className="text-lg font-display font-bold text-primary flex items-center gap-1 leading-tight">
+              <TrendingUp className="w-4 h-4" />
+              +{totalIncome.toFixed(1)}/s
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-1.5">
+            {collectionBonus > 0 && (
+              <div className="flex items-center gap-1 text-[9px] bg-secondary/10 text-secondary-foreground border border-secondary/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                <Library className="w-2.5 h-2.5" />
+                Coll: +{collectionBonus}%
+              </div>
+            )}
+            {labBonus > 0 && (
+              <div className="flex items-center gap-1 text-[9px] bg-primary/10 text-primary border border-primary/20 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                <Beaker className="w-2.5 h-2.5" />
+                Lab: +{labBonus}%
+              </div>
+            )}
+          </div>
         </div>
-        {collectionBonus > 0 && (
-          <span className="text-[10px] bg-secondary/20 text-secondary-foreground px-2 py-0.5 rounded-full font-body">
-            +{collectionBonus}% bonus
-          </span>
-        )}
+
         <Link to="/settings" className="ml-2">
           <Button variant="ghost" size="icon" className="w-8 h-8 text-muted-foreground hover:text-primary">
             <Settings className="w-4 h-4" />
