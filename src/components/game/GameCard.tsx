@@ -63,7 +63,6 @@ if (card.customImage) {
 }
 
 const imageFilter = isRevert ? 'invert(1) hue-rotate(180deg)' : 
-...
                      isGold ? 'sepia(1) saturate(5) brightness(0.8) hue-rotate(-15deg)' : 
                      isSilver ? 'grayscale(1) brightness(1.2) contrast(1.1)' : '';
 
