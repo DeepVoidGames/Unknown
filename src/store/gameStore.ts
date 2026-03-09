@@ -18,6 +18,7 @@ export interface GameCard {
   characterName: string;
   types: string[]; // e.g. ["HOLO", "FULL_ART"]
   income: number;
+  power: number;
   avatarId?: number;
   customImage?: string;
   status: string;
@@ -82,14 +83,17 @@ const generateCard = (
   }, 1);
 
   const finalIncome = Math.floor(character.baseMultiplier * combinedMultiplier);
+  const finalPower = Math.floor((character as any).basePower * combinedMultiplier);
   const timestamp = Date.now();
+  const uuid = crypto.randomUUID();
 
   return {
-    id: `${character.name.replace(/\s+/g, '-').toLowerCase()}-${selectedTypes.join('-')}-${timestamp}`,
+    id: `${character.name.replace(/\s+/g, '-').toLowerCase()}-${selectedTypes.join('-')}-${timestamp}-${uuid.slice(0, 8)}`,
     name: character.name,
     characterName: character.name,
     types: selectedTypes,
     income: finalIncome,
+    power: finalPower,
     avatarId: character.avatarId,
     customImage: (character as any).customImage,
     status: character.status,
