@@ -26,6 +26,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
   const [revealedCards, setRevealedCards] = useState<CardType[]>([]);
   const [showCards, setShowCards] = useState<number[]>([]);
   const [soldCards, setSoldCards] = useState<string[]>([]);
+  const [addedToInventory, setAddedToInventory] = useState(false);
   const [portalVibration, setPortalVibration] = useState(0);
 
   const sellCard = useGameStore((s) => s.sellCard);
@@ -61,8 +62,8 @@ export function PackOpening({ packId }: PackOpeningProps) {
       return;
     }
 
-    // If we're already in a portal (Open Again), add current cards to inventory first
-    if (showCards.length > 0) {
+    // If we're already in a portal (Open Again), add current cards to inventory first if not already added
+    if (showCards.length > 0 && !addedToInventory) {
       const remainingCards = revealedCards.filter(c => !soldCards.includes(c.id));
       addCards(remainingCards);
     }
@@ -74,6 +75,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
       setRevealedCards(newCards);
       setShowCards([]);
       setSoldCards([]);
+      setAddedToInventory(false);
       
       setTimeout(() => {
         setIsOpening(false);
@@ -83,10 +85,13 @@ export function PackOpening({ packId }: PackOpeningProps) {
 
   const revealCard = (index: number) => {
     if (showCards.includes(index)) return;
-    setShowCards((prev) => [...prev, index]);
+    const newShowCards = [...showCards, index];
+    setShowCards(newShowCards);
 
-    if (showCards.length + 1 === pack.cardCount) {
-      addCards(revealedCards);
+    if (newShowCards.length === pack.cardCount) {
+      const remainingCards = revealedCards.filter(c => !soldCards.includes(c.id));
+      addCards(remainingCards);
+      setAddedToInventory(true);
     }
   };
 
@@ -99,7 +104,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
   };
 
   const closePortal = () => {
-    if (showCards.length < pack.cardCount) {
+    if (!addedToInventory) {
       const remainingCards = revealedCards.filter(c => !soldCards.includes(c.id));
       addCards(remainingCards);
     }
@@ -107,6 +112,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
     setRevealedCards([]);
     setShowCards([]);
     setSoldCards([]);
+    setAddedToInventory(false);
   };
 
   const getUnlockRequirement = (id: string) => {

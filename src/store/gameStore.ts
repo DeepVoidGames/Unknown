@@ -348,7 +348,7 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: "rick-morty-idle-save",
-      version: 2,
+      version: 3,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {
           persistedState = {
@@ -373,7 +373,7 @@ export const useGameStore = create<GameState>()(
             return card;
           };
 
-          return {
+          persistedState = {
             ...persistedState,
             inventory: persistedState.inventory?.map(migrateCard) || [],
             activeSlots: persistedState.activeSlots?.map(migrateCard) || [
@@ -382,6 +382,34 @@ export const useGameStore = create<GameState>()(
               null,
               null,
             ],
+          };
+        }
+
+        if (version < 3) {
+          // Fix duplicate IDs by regenerating them for all cards
+          const oldInv = persistedState.inventory || [];
+          const newInventory = oldInv.map((card: any) => {
+            const uuid = crypto.randomUUID().slice(0, 8);
+            const baseId = card.id ? card.id.split('-').slice(0, 2).join('-') : 'unknown';
+            return { 
+              ...card, 
+              id: `${baseId}-${card.timestamp || Date.now()}-${uuid}` 
+            };
+          });
+          
+          const newActiveSlots = (persistedState.activeSlots || [null, null, null, null]).map((slot: any) => {
+            if (!slot) return null;
+            const oldIndex = oldInv.findIndex((c: any) => c.id === slot.id);
+            if (oldIndex !== -1 && newInventory[oldIndex]) {
+              return newInventory[oldIndex];
+            }
+            return null;
+          });
+
+          persistedState = {
+            ...persistedState,
+            inventory: newInventory,
+            activeSlots: newActiveSlots,
           };
         }
 
