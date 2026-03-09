@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "sh ./update-build-hash.sh || ./update-build-hash.bat",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",

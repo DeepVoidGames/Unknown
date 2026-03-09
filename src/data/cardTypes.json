@@ -1,0 +1,49 @@
+[
+  {
+    "id": "COMMON",
+    "label": "Common",
+    "multiplier": 1,
+    "canCombine": false
+  },
+  {
+    "id": "RARE",
+    "label": "Rare",
+    "multiplier": 2,
+    "canCombine": false
+  },
+  {
+    "id": "HOLO",
+    "label": "Holo",
+    "multiplier": 3,
+    "canCombine": true,
+    "combinesWith": ["FULL_ART"]
+  },
+  {
+    "id": "FULL_ART",
+    "label": "Full Art",
+    "multiplier": 4,
+    "canCombine": true,
+    "combinesWith": ["HOLO", "SILVER", "GOLD", "REVERT"]
+  },
+  {
+    "id": "SILVER",
+    "label": "Silver",
+    "multiplier": 6,
+    "canCombine": true,
+    "combinesWith": ["FULL_ART"]
+  },
+  {
+    "id": "GOLD",
+    "label": "Gold",
+    "multiplier": 10,
+    "canCombine": true,
+    "combinesWith": ["FULL_ART"]
+  },
+  {
+    "id": "REVERT",
+    "label": "Revert",
+    "multiplier": 15,
+    "canCombine": true,
+    "combinesWith": ["FULL_ART"]
+  }
+]

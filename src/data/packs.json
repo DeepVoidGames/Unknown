@@ -1,0 +1,97 @@
+[
+  {
+    "id": "standard",
+    "name": "Standard Portal",
+    "description": "Basic interdimensional summon. Contains Common, Rare, and Holo entities.",
+    "cost": 1000,
+    "cardCount": 3,
+    "color": "primary",
+    "weights": {
+      "COMMON": 0.70,
+      "RARE": 0.20,
+      "HOLO": 0.10,
+      "FULL_ART": 0,
+      "SILVER": 0,
+      "GOLD": 0,
+      "REVERT": 0
+    },
+    "combineChance": 0.1,
+    "locked": false
+  },
+  {
+    "id": "mega",
+    "name": "Mega Portal",
+    "description": "Stable rift. High chance for Full Art and Holo entities.",
+    "cost": 5000,
+    "cardCount": 5,
+    "color": "blue-500",
+    "weights": {
+      "COMMON": 0.40,
+      "RARE": 0.35,
+      "HOLO": 0.15,
+      "FULL_ART": 0.10,
+      "SILVER": 0,
+      "GOLD": 0,
+      "REVERT": 0
+    },
+    "combineChance": 0.25,
+    "locked": true
+  },
+  {
+    "id": "silver-rift",
+    "name": "Silver Rift",
+    "description": "A metallic breach. Increased chance for Silver variants.",
+    "cost": 12000,
+    "cardCount": 3,
+    "color": "slate-400",
+    "weights": {
+      "COMMON": 0.20,
+      "RARE": 0.30,
+      "HOLO": 0.20,
+      "FULL_ART": 0.20,
+      "SILVER": 0.10,
+      "GOLD": 0,
+      "REVERT": 0
+    },
+    "combineChance": 0.35,
+    "locked": true
+  },
+  {
+    "id": "alchemists-portal",
+    "name": "Alchemist Portal",
+    "description": "Turning lead into gold. High chance for Gold and Silver variants.",
+    "cost": 50000,
+    "cardCount": 3,
+    "color": "yellow-600",
+    "weights": {
+      "COMMON": 0.10,
+      "RARE": 0.20,
+      "HOLO": 0.20,
+      "FULL_ART": 0.30,
+      "SILVER": 0.15,
+      "GOLD": 0.05,
+      "REVERT": 0
+    },
+    "combineChance": 0.5,
+    "locked": true
+  },
+  {
+    "id": "void-breach",
+    "name": "Void Breach",
+    "description": "The reality is inverted. Only for the true collectors.",
+    "cost": 150000,
+    "cardCount": 1,
+    "color": "red-600",
+    "weights": {
+      "COMMON": 0.05,
+      "RARE": 0.10,
+      "HOLO": 0.20,
+      "FULL_ART": 0.40,
+      "SILVER": 0.15,
+      "GOLD": 0.08,
+      "REVERT": 0.02
+    },
+    "combineChance": 0.7,
+    "locked": true
+  }
+]

@@ -1,5 +1,7 @@
 import { useGameStore } from '@/store/gameStore';
-import { Leaf, TrendingUp } from 'lucide-react';
+import { Leaf, TrendingUp, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 export function Header() {
   const seeds = useGameStore((s) => s.seeds);
@@ -31,10 +33,6 @@ export function Header() {
         </div>
       </div>
 
-      <h1 className="font-display text-lg font-bold text-foreground hidden sm:block">
-        Rick & Morty <span className="text-primary">Idle</span> Collector
-      </h1>
-
       <div className="flex items-center gap-3">
         <div className="text-right">
           <p className="text-xs text-muted-foreground font-body">Income</p>
@@ -48,6 +46,11 @@ export function Header() {
             +{collectionBonus}% bonus
           </span>
         )}
+        <Link to="/settings" className="ml-2">
+          <Button variant="ghost" size="icon" className="w-8 h-8 text-muted-foreground hover:text-primary">
+            <Settings className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
     </header>
   );

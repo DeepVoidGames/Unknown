@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Rick Sanchez",
+    "baseMultiplier": 5,
+    "status": "Alive",
+    "species": "Human",
+    "avatarId": 1
+  },
+  {
+    "name": "Morty Smith",
+    "baseMultiplier": 3,
+    "status": "Alive",
+    "species": "Human",
+    "avatarId": 2
+  },
+  {
+    "name": "Summer Smith",
+    "baseMultiplier": 2,
+    "status": "Alive",
+    "species": "Human",
+    "avatarId": 3
+  },
+  {
+    "name": "Beth Smith",
+    "baseMultiplier": 2.5,
+    "status": "Alive",
+    "species": "Human",
+    "avatarId": 4
+  },
+  {
+    "name": "Jerry Smith",
+    "baseMultiplier": 1,
+    "status": "Alive",
+    "species": "Human",
+    "avatarId": 5
+  },
+  {
+    "name": "Evil Morty",
+    "baseMultiplier": 10,
+    "status": "Unknown",
+    "species": "Human",
+    "avatarId": 18
+  },
+  {
+    "name": "Birdperson",
+    "baseMultiplier": 4,
+    "status": "Alive",
+    "species": "Bird-Person",
+    "avatarId": 47
+  },
+  {
+    "name": "Squanchy",
+    "baseMultiplier": 3.5,
+    "status": "Unknown",
+    "species": "Cat-Person",
+    "avatarId": 331
+  },
+  {
+    "name": "Noob Noob",
+    "baseMultiplier": 1.5,
+    "status": "Alive",
+    "species": "Humanoid",
+    "avatarId": 252
+  },
+  {
+    "name": "Krombopulos Michael",
+    "baseMultiplier": 6,
+    "status": "Dead",
+    "species": "Gromflomite",
+    "avatarId": 196
+  }
+]
