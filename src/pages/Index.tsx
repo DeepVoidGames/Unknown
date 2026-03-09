@@ -35,10 +35,10 @@ const Index = () => {
         (c) => !state.activeSlots.some((s) => s?.id === c.id),
       ).length;
       const bonus = 1 + inactiveCards / 100;
-      
+
       // Apply Upgrade Multiplier (5% per level)
-      const upgradeBonus = 1 + (state.upgrades.seeds * 0.05);
-      
+      const upgradeBonus = 1 + state.upgrades.seeds * 0.05;
+
       const earned = Math.floor(activeIncome * bonus * upgradeBonus * elapsed);
       if (earned > 0) {
         state.updateSeeds(earned);
@@ -61,10 +61,10 @@ const Index = () => {
         (c) => !state.activeSlots.some((s) => s?.id === c.id),
       ).length;
       const bonus = 1 + inactiveCards / 100;
-      
+
       // Apply Upgrade Multiplier (5% per level)
-      const upgradeBonus = 1 + (state.upgrades.seeds * 0.05);
-      
+      const upgradeBonus = 1 + state.upgrades.seeds * 0.05;
+
       const earned = activeIncome * bonus * upgradeBonus;
       if (earned > 0) {
         state.updateSeeds(earned);
@@ -102,7 +102,7 @@ const Index = () => {
           <Button
             variant="outline"
             size="lg"
-            className="font-display font-bold gap-3 px-8 shadow-lg hover:bg-primary/5 transition-all border-primary/20"
+            className="font-display font-bold gap-3 px-8 shadow-lg transition-all border-primary/20 hover:border-primary/40 hover:bg-primary/10 hover:text-white"
           >
             <Beaker className="w-5 h-5 text-primary" />
             Rick's Lab

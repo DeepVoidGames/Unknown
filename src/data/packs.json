@@ -7,15 +7,15 @@
     "cardCount": 3,
     "color": "primary",
     "weights": {
-      "COMMON": 0.70,
-      "RARE": 0.20,
-      "HOLO": 0.10,
+      "COMMON": 0.6,
+      "RARE": 0.3,
+      "HOLO": 0.1,
       "FULL_ART": 0,
       "SILVER": 0,
       "GOLD": 0,
       "REVERT": 0
     },
-    "combineChance": 0.1,
+    "combineChance": 0,
     "locked": false
   },
   {
@@ -26,15 +26,15 @@
     "cardCount": 5,
     "color": "blue-500",
     "weights": {
-      "COMMON": 0.40,
-      "RARE": 0.35,
+      "COMMON": 0.35,
+      "RARE": 0.4,
       "HOLO": 0.15,
-      "FULL_ART": 0.10,
+      "FULL_ART": 0.1,
       "SILVER": 0,
       "GOLD": 0,
       "REVERT": 0
     },
-    "combineChance": 0.25,
+    "combineChance": 0.05,
     "locked": true
   },
   {
@@ -45,15 +45,15 @@
     "cardCount": 3,
     "color": "slate-400",
     "weights": {
-      "COMMON": 0.20,
-      "RARE": 0.30,
-      "HOLO": 0.20,
-      "FULL_ART": 0.20,
-      "SILVER": 0.10,
+      "COMMON": 0.15,
+      "RARE": 0.35,
+      "HOLO": 0.2,
+      "FULL_ART": 0.2,
+      "SILVER": 0.1,
       "GOLD": 0,
       "REVERT": 0
     },
-    "combineChance": 0.35,
+    "combineChance": 0.1,
     "locked": true
   },
   {
@@ -64,15 +64,15 @@
     "cardCount": 3,
     "color": "yellow-600",
     "weights": {
-      "COMMON": 0.10,
-      "RARE": 0.20,
-      "HOLO": 0.20,
-      "FULL_ART": 0.30,
+      "COMMON": 0.1,
+      "RARE": 0.2,
+      "HOLO": 0.2,
+      "FULL_ART": 0.3,
       "SILVER": 0.15,
       "GOLD": 0.05,
       "REVERT": 0
     },
-    "combineChance": 0.5,
+    "combineChance": 0.15,
     "locked": true
   },
   {
@@ -83,15 +83,15 @@
     "cardCount": 1,
     "color": "red-600",
     "weights": {
-      "COMMON": 0.05,
-      "RARE": 0.10,
-      "HOLO": 0.20,
-      "FULL_ART": 0.40,
+      "COMMON": 0,
+      "RARE": 0.15,
+      "HOLO": 0.2,
+      "FULL_ART": 0.4,
       "SILVER": 0.15,
       "GOLD": 0.08,
       "REVERT": 0.02
     },
-    "combineChance": 0.7,
+    "combineChance": 0.2,
     "locked": true
   }
 ]

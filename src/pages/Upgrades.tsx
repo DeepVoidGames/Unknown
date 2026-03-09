@@ -124,7 +124,7 @@ const Upgrades = () => {
                       <h3 className="text-xl font-display font-bold">
                         {upg.name}
                       </h3>
-                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed min-h-20">
                         {upg.description}
                       </p>
                     </div>
