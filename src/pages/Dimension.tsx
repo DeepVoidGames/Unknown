@@ -98,13 +98,15 @@ const Dimension = () => {
       <main className="flex-1 p-6">
         <div className="max-w-5xl mx-auto space-y-8">
           
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-muted/30 p-4 rounded-xl border border-border">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Map className="w-5 h-5 text-primary" />
-              </div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-muted/30 p-4 rounded-xl border border-border">
+            <div className="flex items-center gap-4">
+              <Link to="/">
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <ArrowLeft className="w-6 h-6" />
+                </Button>
+              </Link>
               <div>
-                <h1 className="font-display font-bold text-xl">Dimension Rift</h1>
+                <h1 className="font-display font-bold text-2xl">Dimension Rift</h1>
                 <p className="text-xs text-muted-foreground">Current Level: {isDimensionActive ? dimensionLevel : "Inactive"}</p>
               </div>
             </div>
@@ -118,12 +120,6 @@ const Dimension = () => {
                 <History className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-bold">Best: Lvl {maxDimensionLevel}</span>
               </div>
-              <Link to="/">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <ArrowLeft className="w-4 h-4" />
-                  Return
-                </Button>
-              </Link>
             </div>
           </div>
 
