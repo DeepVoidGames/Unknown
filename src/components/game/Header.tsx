@@ -2,6 +2,7 @@ import { useGameStore } from '@/store/gameStore';
 import { Leaf, TrendingUp, Settings, Beaker, Library } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { formatNumber, formatCurrency } from '@/lib/utils';
 
 export function Header() {
   const seeds = useGameStore((s) => s.seeds);
@@ -33,7 +34,7 @@ export function Header() {
         <div>
           <p className="text-xs text-muted-foreground font-body">Mega Seeds</p>
           <p className="text-xl font-display font-bold text-foreground">
-            {Math.floor(seeds).toLocaleString()}
+            {formatCurrency(seeds)}
           </p>
         </div>
       </div>
@@ -44,7 +45,7 @@ export function Header() {
             <p className="text-xs text-muted-foreground font-body">Total Income</p>
             <p className="text-lg font-display font-bold text-primary flex items-center gap-1 leading-tight">
               <TrendingUp className="w-4 h-4" />
-              +{totalIncome.toFixed(1)}/s
+              +{formatNumber(totalIncome)}/s
             </p>
           </div>
           

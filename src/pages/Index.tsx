@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Package, Map, Beaker } from "lucide-react";
 import { toast } from "sonner";
+import { formatCurrency } from "@/lib/utils";
 
 const MAX_OFFLINE_SECONDS = 24 * 60 * 60; // 24h
 
@@ -42,7 +43,7 @@ const Index = () => {
       if (earned > 0) {
         state.updateSeeds(earned);
         toast.success(`Welcome back!`, {
-          description: `You earned ${earned.toLocaleString()} Mega Seeds while away (${Math.floor(elapsed / 60)} min).`,
+          description: `You earned ${formatCurrency(earned)} Mega Seeds while away (${Math.floor(elapsed / 60)} min).`,
         });
       }
     }

@@ -7,6 +7,7 @@ import { Map, ArrowLeft, Sword, History, Zap, Beaker } from "lucide-react";
 import { useGameStore, GameCard as GameCardType } from "@/store/gameStore";
 import { GameCard } from "@/components/game/GameCard";
 import { toast } from "sonner";
+import { formatNumber, formatCurrency } from "@/lib/utils";
 
 const Dimension = () => {
   const { 
@@ -74,7 +75,7 @@ const Dimension = () => {
         if (milestoneUnlocked) {
           toast.success(`MILESTONE REACHED!`, { description: `You unlocked: ${milestoneUnlocked}!`, duration: 5000 });
         } else if (bonus > 0) {
-          toast.success(`Victory! Level ${dimensionLevel} cleared.`, { description: `Milestone Bonus: +${bonus} Mega Seeds!` });
+          toast.success(`Victory! Level ${dimensionLevel} cleared.`, { description: `Milestone Bonus: +${formatCurrency(bonus)} Mega Seeds!` });
         } else {
           toast.success(`Victory! Level ${dimensionLevel} cleared.`);
         }
@@ -82,7 +83,7 @@ const Dimension = () => {
         setEnemyCard(null);
       } else {
         const reward = dimensionLevel * 500;
-        toast.error(`Defeat! You reached level ${dimensionLevel}.`, { description: `Final Reward: ${reward} Mega Seeds.` });
+        toast.error(`Defeat! You reached level ${dimensionLevel}.`, { description: `Final Reward: ${formatCurrency(reward)} Mega Seeds.` });
         resetDimension(reward);
         setEnemyCard(null);
       }
@@ -147,10 +148,10 @@ const Dimension = () => {
                       <div className="text-center">
                         <div className="flex items-center gap-2 text-2xl font-bold text-foreground">
                           <Sword className="w-6 h-6 text-red-500" />
-                          {playerStats.totalPower}
+                          {formatNumber(playerStats.totalPower)}
                         </div>
                         <p className="text-[10px] text-muted-foreground uppercase font-bold">
-                          Base {playerStats.basePower} + {playerStats.bonusPercent}% Lab Bonus
+                          Base {formatNumber(playerStats.basePower)} + {playerStats.bonusPercent}% Lab Bonus
                         </p>
                       </div>
                     </div>
@@ -170,7 +171,7 @@ const Dimension = () => {
               </div>
 
               <Button onClick={handleStart} size="lg" className="px-12 py-6 text-xl font-display font-bold shadow-xl">
-                Open Portal (1,000 Seeds)
+                Open Portal ({formatCurrency(1000)} Seeds)
               </Button>
             </div>
           ) : (
@@ -186,7 +187,7 @@ const Dimension = () => {
                   <div className="text-center space-y-1">
                     <div className="flex items-center justify-center gap-2 text-3xl font-bold text-foreground">
                       <Sword className="w-7 h-7 text-red-500" />
-                      {playerStats?.totalPower}
+                      {formatNumber(playerStats?.totalPower || 0)}
                     </div>
                     {playerStats && playerStats.bonusPercent > 0 && (
                       <div className="flex items-center justify-center gap-1.5 text-[10px] text-primary font-bold uppercase">
@@ -211,7 +212,7 @@ const Dimension = () => {
                   </div>
                   <div className="flex items-center gap-2 text-3xl font-bold text-red-500">
                     <Sword className="w-7 h-7" />
-                    {enemyCard?.power}
+                    {formatNumber(enemyCard?.power || 0)}
                   </div>
                 </div>
               </div>

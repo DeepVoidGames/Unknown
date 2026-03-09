@@ -4,6 +4,7 @@ import { GameCard } from './GameCard';
 import { Button } from '@/components/ui/button';
 import { Package, Sparkles, X, ChevronRight, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatCurrency } from '@/lib/utils';
 import packs from '@/data/packs.json';
 
 interface PackOpeningProps {
@@ -151,7 +152,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
         className="font-display font-bold min-w-[140px] shadow-xl"
         variant={!isUnlocked ? 'outline' : 'default'}
       >
-        {!isUnlocked ? 'LOCKED' : `Buy for ${pack.cost.toLocaleString()}`}
+        {!isUnlocked ? 'LOCKED' : `Buy for ${formatCurrency(pack.cost)}`}
       </Button>
 
       {isOpen && (

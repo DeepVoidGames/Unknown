@@ -1,5 +1,6 @@
 import { type GameCard as GameCardType } from '@/store/gameStore';
 import { Sparkles, Zap, Star, Circle, Coins, Trophy, RefreshCw, Sword } from 'lucide-react';
+import { formatNumber } from '@/lib/utils';
 import cardTypes from '@/data/cardTypes.json';
 
 interface GameCardProps {
@@ -124,12 +125,12 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
           </div>
           <div className="flex flex-col items-end">
             <span className="text-xs font-bold text-primary">
-              +{card.income}/s
+              +{formatNumber(card.income)}/s
             </span>
             <div className="flex items-center gap-1">
               <Sword className="w-2.5 h-2.5 text-red-500 fill-red-500/20" />
               <span className="text-[10px] font-bold text-red-500">
-                {card.power}
+                {formatNumber(card.power)}
               </span>
             </div>
           </div>
