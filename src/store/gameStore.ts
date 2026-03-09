@@ -36,6 +36,7 @@ interface GameState {
   dimensionLevel: number;
   maxDimensionLevel: number;
   isDimensionActive: boolean;
+  currentEnemy: GameCard | null;
   upgrades: {
     seeds: number;
     power: number;
@@ -138,6 +139,7 @@ export const useGameStore = create<GameState>()(
       dimensionLevel: 1,
       maxDimensionLevel: 1,
       isDimensionActive: false,
+      currentEnemy: null,
       upgrades: {
         seeds: 0,
         power: 0,
@@ -247,18 +249,26 @@ export const useGameStore = create<GameState>()(
         set((s) => ({ seeds: s.seeds + amount, lastSaved: Date.now() })),
 
       startDimension: () => {
-        const { seeds } = get();
+        const { seeds, generateRandomCard } = get();
         if (seeds < 1000) return false;
+        
+        const enemy = generateRandomCard(
+          { COMMON: 0.6, RARE: 0.3, HOLO: 0.08, FULL_ART: 0.02 },
+          0.1,
+        );
+        // Strength scale for lvl 1 is already handled by base power
+
         set((s) => ({
           seeds: s.seeds - 1000,
           isDimensionActive: true,
           dimensionLevel: 1,
+          currentEnemy: enemy
         }));
         return true;
       },
 
       nextDimensionLevel: () => {
-        const { dimensionLevel } = get();
+        const { dimensionLevel, generateRandomCard } = get();
         let bonus = 0;
         let milestoneUnlocked = null;
 
@@ -272,6 +282,13 @@ export const useGameStore = create<GameState>()(
         if (nextLvl === 50) milestoneUnlocked = "Alchemist Portal";
         if (nextLvl === 100) milestoneUnlocked = "Void Breach";
 
+        const newEnemy = generateRandomCard(
+          { COMMON: 0.6, RARE: 0.3, HOLO: 0.08, FULL_ART: 0.02 },
+          0.1,
+        );
+        const scaleFactor = 1 + (nextLvl - 1) * 0.25;
+        newEnemy.power = Math.floor(newEnemy.power * scaleFactor);
+
         set((s) => {
           const nextLevel = s.dimensionLevel + 1;
           const newMax = Math.max(s.maxDimensionLevel, nextLevel);
@@ -279,6 +296,7 @@ export const useGameStore = create<GameState>()(
             seeds: s.seeds + bonus,
             dimensionLevel: nextLevel,
             maxDimensionLevel: newMax,
+            currentEnemy: newEnemy
           };
         });
 
@@ -290,6 +308,7 @@ export const useGameStore = create<GameState>()(
           seeds: s.seeds + reward,
           isDimensionActive: false,
           dimensionLevel: 1,
+          currentEnemy: null
         }));
       },
 
@@ -334,6 +353,7 @@ export const useGameStore = create<GameState>()(
           dimensionLevel: 1,
           maxDimensionLevel: 1,
           isDimensionActive: false,
+          currentEnemy: null,
           upgrades: { seeds: 0, power: 0 },
           lastSaved: Date.now(),
         });
@@ -348,7 +368,7 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: "rick-morty-idle-save",
-      version: 3,
+      version: 4,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {
           persistedState = {
@@ -410,6 +430,13 @@ export const useGameStore = create<GameState>()(
             ...persistedState,
             inventory: newInventory,
             activeSlots: newActiveSlots,
+          };
+        }
+
+        if (version < 4) {
+          persistedState = {
+            ...persistedState,
+            currentEnemy: null,
           };
         }
 

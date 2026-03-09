@@ -16,6 +16,7 @@ const Dimension = () => {
     isDimensionActive,
     dimensionLevel,
     maxDimensionLevel,
+    currentEnemy,
     upgrades,
     startDimension,
     nextDimensionLevel,
@@ -23,7 +24,6 @@ const Dimension = () => {
     generateRandomCard,
   } = useGameStore();
 
-  const [enemyCard, setEnemyCard] = useState<GameCardType | null>(null);
   const [isFighting, setIsFighting] = useState(false);
 
   // Find player's strongest card and calculate base vs bonus
@@ -43,19 +43,6 @@ const Dimension = () => {
     };
   }, [inventory, upgrades.power]);
 
-  // Generate enemy when level changes or dimension starts
-  useEffect(() => {
-    if (isDimensionActive && !enemyCard) {
-      const randomEnemy = generateRandomCard(
-        { COMMON: 0.6, RARE: 0.3, HOLO: 0.08, FULL_ART: 0.02 },
-        0.1,
-      );
-      const scaleFactor = 1 + (dimensionLevel - 1) * 0.25;
-      randomEnemy.power = Math.floor(randomEnemy.power * scaleFactor);
-      setEnemyCard(randomEnemy);
-    }
-  }, [isDimensionActive, dimensionLevel, enemyCard, generateRandomCard]);
-
   const handleStart = () => {
     if (seeds < 1000) {
       toast.error("Not enough Mega Seeds!");
@@ -69,7 +56,7 @@ const Dimension = () => {
   };
 
   const handleFight = () => {
-    if (!playerStats || !enemyCard) return;
+    if (!playerStats || !currentEnemy) return;
 
     setIsFighting(true);
 
@@ -79,8 +66,7 @@ const Dimension = () => {
           description: `You've reached the maximum level and unlocked all rewards!`,
         });
         resetDimension(1000000);
-      }
-      if (playerStats.totalPower >= enemyCard.power) {
+      } else if (playerStats.totalPower >= currentEnemy.power) {
         const { bonus, milestoneUnlocked } = nextDimensionLevel();
 
         if (milestoneUnlocked) {
@@ -95,15 +81,12 @@ const Dimension = () => {
         } else {
           toast.success(`Victory! Level ${dimensionLevel} cleared.`);
         }
-
-        setEnemyCard(null);
       } else {
         const reward = dimensionLevel * 500;
         toast.error(`Defeat! You reached level ${dimensionLevel}.`, {
           description: `Final Reward: ${formatCurrency(reward)} Mega Seeds.`,
         });
         resetDimension(reward);
-        setEnemyCard(null);
       }
       setIsFighting(false);
     }, 1500);
@@ -253,11 +236,11 @@ const Dimension = () => {
                   <div
                     className={`transition-all duration-300 ${isFighting ? "animate-battle-jump" : ""}`}
                   >
-                    {enemyCard && <GameCard card={enemyCard} />}
+                    {currentEnemy && <GameCard card={currentEnemy} />}
                   </div>
                   <div className="flex items-center gap-2 text-3xl font-bold text-red-500">
                     <Sword className="w-7 h-7" />
-                    {formatNumber(enemyCard?.power || 0)}
+                    {formatNumber(currentEnemy?.power || 0)}
                   </div>
                 </div>
               </div>
@@ -265,7 +248,7 @@ const Dimension = () => {
               <div className="flex flex-col items-center gap-4">
                 <Button
                   onClick={handleFight}
-                  disabled={isFighting || !playerStats || !enemyCard}
+                  disabled={isFighting || !playerStats || !currentEnemy}
                   size="lg"
                   className="px-20 py-8 text-2xl font-display font-bold bg-red-600 hover:bg-red-700 shadow-xl"
                 >
