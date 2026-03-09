@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useGameStore, GameCard as CardType } from '@/store/gameStore';
 import { GameCard } from './GameCard';
 import { Button } from '@/components/ui/button';
-import { Package, Sparkles, X, Info, ChevronRight } from 'lucide-react';
+import { Package, Sparkles, X, ChevronRight, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import packs from '@/data/packs.json';
 
@@ -16,6 +16,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
   const maxInventory = useGameStore((s) => s.maxInventory);
   const buyPack = useGameStore((s) => s.buyPack);
   const addCards = useGameStore((s) => s.addCards);
+  const isUnlocked = useGameStore((s) => s.isPackUnlocked(packId));
 
   const pack = packs.find(p => p.id === packId);
 
@@ -37,6 +38,13 @@ export function PackOpening({ packId }: PackOpeningProps) {
   if (!pack) return null;
 
   const handleBuyPack = () => {
+    if (!isUnlocked) {
+      toast.error('Portal Locked!', {
+        description: 'Reach higher dimension levels to unlock this portal.',
+      });
+      return;
+    }
+
     if (inventory.length >= maxInventory) {
       toast.error('Inventory Full!', {
         description: 'Sell some cards to make room for new ones.',
@@ -80,22 +88,30 @@ export function PackOpening({ packId }: PackOpeningProps) {
     setShowCards([]);
   };
 
+  const getUnlockRequirement = (id: string) => {
+    if (id === 'mega') return 'Dimension Lvl 10';
+    if (id === 'silver-rift') return 'Dimension Lvl 25';
+    if (id === 'alchemists-portal') return 'Dimension Lvl 50';
+    if (id === 'void-breach') return 'Dimension Lvl 100';
+    return null;
+  };
+
   const colorClass = pack.id === 'mega' ? 'text-blue-400' : pack.id === 'central-finite-curve' ? 'text-purple-400' : 'text-primary';
   const borderClass = pack.id === 'mega' ? 'border-blue-500/50' : pack.id === 'central-finite-curve' ? 'border-purple-500/50' : 'border-primary/50';
 
   return (
-    <div className={`p-6 rounded-2xl bg-card border ${borderClass} flex flex-col md:flex-row items-center gap-6 group transition-all ${pack.locked ? 'grayscale opacity-60' : 'hover:bg-muted/10'}`}>
+    <div className={`p-6 rounded-2xl bg-card border ${borderClass} flex flex-col md:flex-row items-center gap-6 group transition-all ${!isUnlocked ? 'grayscale opacity-60' : 'hover:bg-muted/10'}`}>
       <div className="relative">
         <div className={`w-24 h-24 rounded-3xl bg-muted/20 flex items-center justify-center relative shadow-2xl overflow-hidden`}>
-          <Package className={`w-12 h-12 ${colorClass} ${!pack.locked && 'group-hover:scale-110'} transition-transform`} />
+          <Package className={`w-12 h-12 ${colorClass} ${isUnlocked && 'group-hover:scale-110'} transition-transform`} />
           <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-50" />
-          {pack.locked && (
+          {!isUnlocked && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-               <X className="w-8 h-8 text-white/80" />
+               <Lock className="w-8 h-8 text-white/80" />
             </div>
           )}
         </div>
-        {pack.id !== 'standard' && !pack.locked && (
+        {pack.id !== 'standard' && isUnlocked && (
            <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-pulse" />
         )}
       </div>
@@ -103,8 +119,10 @@ export function PackOpening({ packId }: PackOpeningProps) {
       <div className="flex-1 space-y-2 text-center md:text-left">
         <div className="flex items-center justify-center md:justify-start gap-2">
           <h3 className="font-display text-xl font-bold">{pack.name}</h3>
-          {pack.locked && (
-            <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full font-bold uppercase tracking-widest text-muted-foreground border border-border">Locked</span>
+          {!isUnlocked && (
+            <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest border border-red-500/40">
+              Unlock at {getUnlockRequirement(pack.id)}
+            </span>
           )}
         </div>
         <p className="text-xs text-muted-foreground font-body max-w-xs">{pack.description}</p>
@@ -129,11 +147,11 @@ export function PackOpening({ packId }: PackOpeningProps) {
 
       <Button 
         onClick={handleBuyPack} 
-        disabled={seeds < pack.cost || pack.locked}
+        disabled={seeds < pack.cost || !isUnlocked}
         className="font-display font-bold min-w-[140px] shadow-xl"
-        variant={pack.locked ? 'outline' : (pack.id === 'central-finite-curve' ? 'secondary' : 'default')}
+        variant={!isUnlocked ? 'outline' : 'default'}
       >
-        {pack.locked ? 'LOCKED' : `Buy for ${pack.cost.toLocaleString()}`}
+        {!isUnlocked ? 'LOCKED' : `Buy for ${pack.cost.toLocaleString()}`}
       </Button>
 
       {isOpen && (

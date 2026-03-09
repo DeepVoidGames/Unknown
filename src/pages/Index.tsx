@@ -6,7 +6,7 @@ import { CollectionTab } from "@/components/game/CollectionTab";
 import { Footer } from "@/components/game/Footer";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Package } from "lucide-react";
+import { Package, Map } from "lucide-react";
 import { toast } from "sonner";
 
 const MAX_OFFLINE_SECONDS = 24 * 60 * 60; // 24h
@@ -69,7 +69,7 @@ const Index = () => {
       <Header />
       <PortalArea />
 
-      <div className="flex justify-center py-6 bg-muted/20 border-y border-border">
+      <div className="flex justify-center py-6 bg-muted/20 border-y border-border gap-4">
         <Link to="/packs">
           <Button
             size="lg"
@@ -77,6 +77,16 @@ const Index = () => {
           >
             <Package className="w-5 h-5" />
             Go to Portal Shop
+          </Button>
+        </Link>
+        <Link to="/dimension">
+          <Button
+            variant="secondary"
+            size="lg"
+            className="font-display font-bold gap-3 px-8 shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all"
+          >
+            <Map className="w-5 h-5" />
+            Go to Dimension
           </Button>
         </Link>
       </div>

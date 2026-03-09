@@ -31,15 +31,22 @@ interface GameState {
   inventory: GameCard[];
   maxInventory: number;
   activeSlots: (GameCard | null)[];
+  dimensionLevel: number;
+  maxDimensionLevel: number;
+  isDimensionActive: boolean;
   lastSaved: number;
   addCard: (card: GameCard) => boolean;
   addCards: (cards: GameCard[]) => boolean;
   sellCard: (cardId: string) => void;
   sellCards: (cardIds: string[]) => void;
+  isPackUnlocked: (packId: string) => boolean;
   buyPack: (packId: string) => GameCard[] | null;
   generateRandomCard: (weights?: Record<string, number>, combineChance?: number) => GameCard;
   toggleSlot: (slotIndex: number, card: GameCard) => void;
   updateSeeds: (amount: number) => void;
+  startDimension: () => boolean;
+  nextDimensionLevel: () => { bonus: number, milestoneUnlocked: string | null };
+  resetDimension: (reward: number) => void;
   hardReset: () => void;
   setLastSaved: (ts: number) => void;
 }
@@ -109,6 +116,9 @@ export const useGameStore = create<GameState>()(
       inventory: [],
       maxInventory: 50,
       activeSlots: [null, null, null, null],
+      dimensionLevel: 1,
+      maxDimensionLevel: 1,
+      isDimensionActive: false,
       lastSaved: Date.now(),
 
       addCard: (card) => {
@@ -152,12 +162,23 @@ export const useGameStore = create<GameState>()(
           };
         }),
 
+      isPackUnlocked: (packId) => {
+        const { maxDimensionLevel } = get();
+        if (packId === 'standard') return true;
+        if (packId === 'mega') return maxDimensionLevel >= 10;
+        if (packId === 'silver-rift') return maxDimensionLevel >= 25;
+        if (packId === 'alchemists-portal') return maxDimensionLevel >= 50;
+        if (packId === 'void-breach') return maxDimensionLevel >= 100;
+        return false;
+      },
+
       buyPack: (packId) => {
-        const { seeds, inventory, maxInventory } = get();
+        const { seeds, inventory, maxInventory, isPackUnlocked } = get();
         const pack = packs.find(p => p.id === packId);
         
         if (!pack || seeds < pack.cost) return null;
         if (inventory.length >= maxInventory) return null;
+        if (!isPackUnlocked(packId)) return null;
 
         const newCards: GameCard[] = [];
         for (let i = 0; i < pack.cardCount; i++) {
@@ -192,12 +213,64 @@ export const useGameStore = create<GameState>()(
       updateSeeds: (amount) =>
         set((s) => ({ seeds: s.seeds + amount, lastSaved: Date.now() })),
 
+      startDimension: () => {
+        const { seeds } = get();
+        if (seeds < 1000) return false;
+        set((s) => ({ 
+          seeds: s.seeds - 1000, 
+          isDimensionActive: true,
+          dimensionLevel: 1 
+        }));
+        return true;
+      },
+
+      nextDimensionLevel: () => {
+        const { dimensionLevel } = get();
+        let bonus = 0;
+        let milestoneUnlocked = null;
+        
+        // Every 5 levels reward bonus seeds
+        if ((dimensionLevel + 1) % 5 === 0) {
+          bonus = (dimensionLevel + 1) * 200;
+        }
+
+        // Check for specific milestones
+        const nextLvl = dimensionLevel + 1;
+        if (nextLvl === 10) milestoneUnlocked = "Mega Portal";
+        if (nextLvl === 25) milestoneUnlocked = "Silver Rift";
+        if (nextLvl === 50) milestoneUnlocked = "Alchemist Portal";
+        if (nextLvl === 100) milestoneUnlocked = "Void Breach";
+
+        set((s) => {
+          const nextLevel = s.dimensionLevel + 1;
+          const newMax = Math.max(s.maxDimensionLevel, nextLevel);
+          return {
+            seeds: s.seeds + bonus,
+            dimensionLevel: nextLevel,
+            maxDimensionLevel: newMax
+          };
+        });
+
+        return { bonus, milestoneUnlocked };
+      },
+
+      resetDimension: (reward) => {
+        set((s) => ({
+          seeds: s.seeds + reward,
+          isDimensionActive: false,
+          dimensionLevel: 1
+        }));
+      },
+
       hardReset: () => {
         set({
           seeds: 100,
           inventory: [],
           maxInventory: 50,
           activeSlots: [null, null, null, null],
+          dimensionLevel: 1,
+          maxDimensionLevel: 1,
+          isDimensionActive: false,
           lastSaved: Date.now(),
         });
         const starter = generateCard({ "COMMON": 0.8, "RARE": 0.2, "HOLO": 0, "FULL_ART": 0 }, 0);
