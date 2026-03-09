@@ -4,7 +4,7 @@
     "name": "Standard Portal",
     "description": "Basic interdimensional summon. Contains Common, Rare, and Holo entities.",
     "cost": 1000,
-    "cardCount": 3,
+    "cardCount": 2,
     "color": "primary",
     "weights": {
       "COMMON": 0.6,
@@ -23,7 +23,7 @@
     "name": "Mega Portal",
     "description": "Stable rift. High chance for Full Art and Holo entities.",
     "cost": 5000,
-    "cardCount": 5,
+    "cardCount": 2,
     "color": "blue-500",
     "weights": {
       "COMMON": 0.35,
@@ -80,7 +80,7 @@
     "name": "Void Breach",
     "description": "The reality is inverted. Only for the true collectors.",
     "cost": 150000,
-    "cardCount": 1,
+    "cardCount": 3,
     "color": "red-600",
     "weights": {
       "COMMON": 0,
