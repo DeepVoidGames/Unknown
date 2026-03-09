@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 220 20% 7%;
+    --foreground: 160 60% 90%;
+
+    --card: 220 18% 12%;
+    --card-foreground: 160 40% 88%;
+
+    --popover: 220 18% 12%;
+    --popover-foreground: 160 40% 88%;
+
+    --primary: 150 80% 45%;
+    --primary-foreground: 220 20% 7%;
+
+    --secondary: 270 50% 50%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 55%;
+
+    --accent: 180 70% 45%;
+    --accent-foreground: 220 20% 7%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 15% 22%;
+    --input: 220 15% 22%;
+    --ring: 150 80% 45%;
+
+    --radius: 0.75rem;
+
+    /* Game-specific tokens */
+    --portal-glow: 150 80% 50%;
+    --holo-1: 0 80% 60%;
+    --holo-2: 60 80% 60%;
+    --holo-3: 120 80% 60%;
+    --holo-4: 180 80% 60%;
+    --holo-5: 240 80% 60%;
+    --holo-6: 300 80% 60%;
+    --rarity-common: 220 10% 55%;
+    --rarity-rare: 210 80% 55%;
+    --rarity-fullart: 30 80% 55%;
+    --rarity-holo: 280 70% 60%;
+
+    --sidebar-background: 220 18% 10%;
+    --sidebar-foreground: 160 40% 88%;
+    --sidebar-primary: 150 80% 45%;
+    --sidebar-primary-foreground: 220 20% 7%;
+    --sidebar-accent: 220 15% 18%;
+    --sidebar-accent-foreground: 160 40% 88%;
+    --sidebar-border: 220 15% 22%;
+    --sidebar-ring: 150 80% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Orbitron', sans-serif;
+  }
+  .font-body {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+/* Holo card animation */
+@keyframes holoShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes rarePulse {
+  0%, 100% { box-shadow: 0 0 8px hsl(var(--rarity-rare) / 0.4); }
+  50% { box-shadow: 0 0 20px hsl(var(--rarity-rare) / 0.7); }
+}
+
+@keyframes portalSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-holo {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--holo-1)),
+    hsl(var(--holo-2)),
+    hsl(var(--holo-3)),
+    hsl(var(--holo-4)),
+    hsl(var(--holo-5)),
+    hsl(var(--holo-6)),
+    hsl(var(--holo-1))
+  );
+  background-size: 400% 400%;
+  animation: holoShift 3s ease infinite;
+}
+
+.animate-rare-pulse {
+  animation: rarePulse 2s ease-in-out infinite;
+}
+
+.animate-portal-spin {
+  animation: portalSpin 8s linear infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
