@@ -43,7 +43,7 @@ interface GameState {
   lastSaved: number;
   addCard: (card: GameCard) => boolean;
   addCards: (cards: GameCard[]) => boolean;
-  sellCard: (cardId: string) => void;
+  sellCard: (cardId: string, card?: GameCard) => void;
   sellCards: (cardIds: string[]) => void;
   isPackUnlocked: (packId: string) => boolean;
   buyPack: (packId: string) => GameCard[] | null;
@@ -161,11 +161,14 @@ export const useGameStore = create<GameState>()(
         return true;
       },
 
-      sellCard: (cardId) =>
+      sellCard: (cardId, card) =>
         set((s) => {
-          const card = s.inventory.find((c) => c.id === cardId);
-          if (!card) return s;
-          const sellPrice = Math.floor(card.income * 100);
+          const cardInInventory = s.inventory.find((c) => c.id === cardId);
+          const targetCard = cardInInventory || card;
+          
+          if (!targetCard) return s;
+          
+          const sellPrice = Math.floor(targetCard.income * 100);
           return {
             inventory: s.inventory.filter((c) => c.id !== cardId),
             activeSlots: s.activeSlots.map((sl) =>

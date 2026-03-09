@@ -25,7 +25,10 @@ export function PackOpening({ packId }: PackOpeningProps) {
   const [isOpening, setIsOpening] = useState(false);
   const [revealedCards, setRevealedCards] = useState<CardType[]>([]);
   const [showCards, setShowCards] = useState<number[]>([]);
+  const [soldCards, setSoldCards] = useState<string[]>([]);
   const [portalVibration, setPortalVibration] = useState(0);
+
+  const sellCard = useGameStore((s) => s.sellCard);
 
   useEffect(() => {
     if (isOpening) {
@@ -58,12 +61,19 @@ export function PackOpening({ packId }: PackOpeningProps) {
       return;
     }
 
+    // If we're already in a portal (Open Again), add current cards to inventory first
+    if (showCards.length > 0) {
+      const remainingCards = revealedCards.filter(c => !soldCards.includes(c.id));
+      addCards(remainingCards);
+    }
+
     const newCards = buyPack(pack.id);
     if (newCards) {
       setIsOpen(true);
       setIsOpening(true);
       setRevealedCards(newCards);
       setShowCards([]);
+      setSoldCards([]);
       
       setTimeout(() => {
         setIsOpening(false);
@@ -80,13 +90,23 @@ export function PackOpening({ packId }: PackOpeningProps) {
     }
   };
 
+  const handleSellCard = (card: CardType) => {
+    sellCard(card.id, card);
+    setSoldCards((prev) => [...prev, card.id]);
+    toast.success(`${card.characterName} sold!`, {
+      description: `Gained ${formatCurrency(Math.floor(card.income * 100))} Mega Seeds.`,
+    });
+  };
+
   const closePortal = () => {
     if (showCards.length < pack.cardCount) {
-      addCards(revealedCards);
+      const remainingCards = revealedCards.filter(c => !soldCards.includes(c.id));
+      addCards(remainingCards);
     }
     setIsOpen(false);
     setRevealedCards([]);
     setShowCards([]);
+    setSoldCards([]);
   };
 
   const getUnlockRequirement = (id: string) => {
@@ -189,14 +209,37 @@ export function PackOpening({ packId }: PackOpeningProps) {
                     {showCards.length === pack.cardCount ? 'ENTITY ACQUIRED' : 'MANIFESTING...'}
                   </h2>
                   <p className="text-muted-foreground">Click to stabilize the interdimensional form</p>
+                  <div className="flex items-center justify-center gap-2 pt-2">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Inventory:</span>
+                    <span className={`text-[10px] font-bold ${inventory.length >= maxInventory ? 'text-red-500' : 'text-primary'}`}>
+                      {inventory.length} / {maxInventory}
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="flex flex-wrap justify-center gap-8 md:gap-12">
                   {revealedCards.map((card, i) => (
-                    <div key={i} className="relative">
+                    <div key={i} className="flex flex-col items-center gap-4">
                       {showCards.includes(i) ? (
-                        <div className="animate-in flip-in-y duration-700">
-                          <GameCard card={card} />
+                        <div className="flex flex-col items-center gap-3 animate-in flip-in-y duration-700">
+                          <div className={soldCards.includes(card.id) ? 'grayscale opacity-40 pointer-events-none' : ''}>
+                            <GameCard card={card} />
+                          </div>
+                          {!soldCards.includes(card.id) && (
+                            <Button 
+                              variant="destructive" 
+                              size="sm"
+                              className="w-full font-bold text-[10px] h-8 bg-red-950/40 hover:bg-red-900 border border-red-500/50"
+                              onClick={() => handleSellCard(card)}
+                            >
+                              SELL FOR {formatCurrency(Math.floor(card.income * 100))}
+                            </Button>
+                          )}
+                          {soldCards.includes(card.id) && (
+                            <div className="h-8 flex items-center justify-center">
+                              <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Sold</span>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <button
@@ -215,13 +258,24 @@ export function PackOpening({ packId }: PackOpeningProps) {
                 </div>
 
                 {showCards.length === pack.cardCount && (
-                  <Button 
-                    onClick={closePortal} 
-                    size="lg" 
-                    className="font-display font-bold px-16 py-8 text-xl shadow-2xl animate-in slide-in-from-bottom-8"
-                  >
-                    RETURN TO CITADEL
-                  </Button>
+                  <div className="flex flex-col md:flex-row items-center gap-4 animate-in slide-in-from-bottom-8">
+                    <Button 
+                      onClick={closePortal} 
+                      size="lg" 
+                      variant="outline"
+                      className="font-display font-bold px-12 py-8 text-xl shadow-2xl"
+                    >
+                      RETURN TO CITADEL
+                    </Button>
+                    <Button 
+                      onClick={handleBuyPack} 
+                      size="lg" 
+                      disabled={seeds < pack.cost || inventory.length >= maxInventory}
+                      className="font-display font-bold px-12 py-8 text-xl shadow-2xl border-2 border-primary"
+                    >
+                      OPEN AGAIN ({formatCurrency(pack.cost)})
+                    </Button>
+                  </div>
                 )}
               </div>
             )}

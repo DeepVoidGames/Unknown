@@ -1,6 +1,6 @@
-import { useGameStore } from '@/store/gameStore';
-import { GameCard } from './GameCard';
-import { CircleDot } from 'lucide-react';
+import { useGameStore } from "@/store/gameStore";
+import { GameCard } from "./GameCard";
+import { CircleDot } from "lucide-react";
 
 export function PortalArea() {
   const activeSlots = useGameStore((s) => s.activeSlots);
@@ -8,7 +8,7 @@ export function PortalArea() {
   const toggleSlot = useGameStore((s) => s.toggleSlot);
 
   const inactiveCards = inventory.filter(
-    (c) => !activeSlots.some((s) => s?.id === c.id)
+    (c) => !activeSlots.some((s) => s?.id === c.id),
   ).length;
 
   return (
@@ -18,9 +18,9 @@ export function PortalArea() {
           Portal Slots
         </h2>
         <p className="text-sm text-muted-foreground font-body">
-          Place cards to generate Mega Seeds • Collection bonus:{' '}
-          <span className="text-primary font-bold">+{inactiveCards}%</span>{' '}
-          ({inactiveCards} cards in inventory)
+          Place cards to generate Mega Seeds • Collection bonus:{" "}
+          <span className="text-primary font-bold">+{inactiveCards}%</span> (
+          {inactiveCards} cards in inventory)
         </p>
       </div>
 
@@ -28,9 +28,17 @@ export function PortalArea() {
         {activeSlots.map((slot, i) => (
           <div key={i} className="relative">
             {/* Portal glow ring */}
-            <div className="absolute -inset-2 rounded-2xl border border-primary/20 animate-portal-spin opacity-30 pointer-events-none" 
-                 style={{ borderRadius: '50%', width: 'calc(100% + 16px)', height: 'calc(100% + 16px)', top: '-8px', left: '-8px' }} />
-            
+            <div
+              className="absolute -inset-2 rounded-2xl border border-primary/20 animate-portal-spin opacity-30 pointer-events-none"
+              style={{
+                borderRadius: "50%",
+                width: "calc(100% + 16px)",
+                height: "calc(100% + 16px)",
+                top: "-8px",
+                left: "-8px",
+              }}
+            />
+
             {slot ? (
               <div className="animate-float">
                 <GameCard
@@ -40,7 +48,7 @@ export function PortalArea() {
                 />
               </div>
             ) : (
-              <div className="w-40 h-64 rounded-xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 bg-muted/20">
+              <div className="w-48 h-64 rounded-xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 bg-muted/20">
                 <CircleDot className="w-8 h-8 text-muted-foreground/40" />
                 <span className="text-xs text-muted-foreground/60 font-body">
                   Slot {i + 1}
