@@ -30,6 +30,16 @@ npm run build
 ```
 The build process automatically updates the **Build Hash** displayed in the settings page.
 
+## 🚢 Deployment (GitHub Pages)
+
+This project is configured to automatically deploy to GitHub Pages via GitHub Actions.
+
+1. Push your changes to the `main` branch.
+2. Go to your repository settings on GitHub.
+3. Navigate to **Settings > Pages**.
+4. Under **Build and deployment > Source**, select **GitHub Actions**.
+5. Your site will be automatically built and deployed at `https://<username>.github.io/<repo-name>/`.
+
 ---
 
 ## 🛠 Contributing: Adding New Characters
