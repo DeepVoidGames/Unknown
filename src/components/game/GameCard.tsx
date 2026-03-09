@@ -1,7 +1,16 @@
-import { type GameCard as GameCardType } from '@/store/gameStore';
-import { Sparkles, Zap, Star, Circle, Coins, Trophy, RefreshCw, Sword } from 'lucide-react';
-import { formatNumber } from '@/lib/utils';
-import cardTypes from '@/data/cardTypes.json';
+import { type GameCard as GameCardType } from "@/store/gameStore";
+import {
+  Sparkles,
+  Zap,
+  Star,
+  Circle,
+  Coins,
+  Trophy,
+  RefreshCw,
+  Sword,
+} from "lucide-react";
+import { formatNumber } from "@/lib/utils";
+import cardTypes from "@/data/cardTypes.json";
 
 interface GameCardProps {
   card: GameCardType;
@@ -22,36 +31,44 @@ const typeIcons: Record<string, any> = {
 };
 
 const rarityConfig: Record<string, any> = {
-  COMMON: { border: 'border-border', bg: 'bg-card' },
-  NORMAL: { border: 'border-border', bg: 'bg-card' },
-  RARE: { border: 'border-blue-400/60 animate-rare-pulse', bg: 'bg-card' },
-  HOLO: { border: 'border-rarity-holo', bg: 'bg-card' },
-  FULL_ART: { border: 'border-rarity-fullart', bg: 'bg-card' },
-  SILVER: { border: 'border-slate-300', bg: 'bg-slate-900/40' },
-  GOLD: { border: 'border-yellow-500', bg: 'bg-yellow-900/20' },
-  REVERT: { border: 'border-red-500', bg: 'bg-black' },
+  COMMON: { border: "border-border", bg: "bg-card" },
+  NORMAL: { border: "border-border", bg: "bg-card" },
+  RARE: { border: "border-blue-400/60 animate-rare-pulse", bg: "bg-card" },
+  HOLO: { border: "border-rarity-holo", bg: "bg-card" },
+  FULL_ART: { border: "border-rarity-fullart", bg: "bg-card" },
+  SILVER: { border: "border-slate-300", bg: "bg-slate-900/40" },
+  GOLD: { border: "border-yellow-500", bg: "bg-yellow-900/20" },
+  REVERT: { border: "border-red-500", bg: "bg-black" },
 };
 
 export function GameCard({ card, onClick, isActive }: GameCardProps) {
   const types = card.types || [];
-  const isHolo = types.includes('HOLO');
-  const isFullArt = types.includes('FULL_ART');
-  const isRare = types.includes('RARE');
-  const isSilver = types.includes('SILVER');
-  const isGold = types.includes('GOLD');
-  const isRevert = types.includes('REVERT');
+  const isHolo = types.includes("HOLO");
+  const isFullArt = types.includes("FULL_ART");
+  const isRare = types.includes("RARE");
+  const isSilver = types.includes("SILVER");
+  const isGold = types.includes("GOLD");
+  const isRevert = types.includes("REVERT");
 
-  const primaryType = types.includes('REVERT') ? 'REVERT' :
-                     types.includes('GOLD') ? 'GOLD' :
-                     types.includes('SILVER') ? 'SILVER' :
-                     types.includes('FULL_ART') ? 'FULL_ART' : 
-                     types.includes('HOLO') ? 'HOLO' : 
-                     types.includes('RARE') ? 'RARE' : 
-                     (types.includes('NORMAL') ? 'NORMAL' : 'COMMON');
-  
+  const primaryType = types.includes("REVERT")
+    ? "REVERT"
+    : types.includes("GOLD")
+      ? "GOLD"
+      : types.includes("SILVER")
+        ? "SILVER"
+        : types.includes("FULL_ART")
+          ? "FULL_ART"
+          : types.includes("HOLO")
+            ? "HOLO"
+            : types.includes("RARE")
+              ? "RARE"
+              : types.includes("NORMAL")
+                ? "NORMAL"
+                : "COMMON";
+
   const config = rarityConfig[primaryType] || rarityConfig.COMMON;
 
-  let imgSrc = 'https://rickandmortyapi.com/api/character/avatar/19.jpeg';
+  let imgSrc = "https://rickandmortyapi.com/api/character/avatar/19.jpeg";
 
   if (card.customImage) {
     imgSrc = card.customImage;
@@ -59,14 +76,18 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
     imgSrc = `https://rickandmortyapi.com/api/character/avatar/${card.avatarId}.jpeg`;
   }
 
-  const imageFilter = isRevert ? 'invert(1) hue-rotate(180deg)' : 
-                       isGold ? 'sepia(1) saturate(5) brightness(0.8) hue-rotate(-15deg)' : 
-                       isSilver ? 'grayscale(1) brightness(1.2) contrast(1.1)' : '';
+  const imageFilter = isRevert
+    ? "invert(1) hue-rotate(180deg)"
+    : isGold
+      ? "sepia(1) saturate(5) brightness(0.8) hue-rotate(-15deg)"
+      : isSilver
+        ? "grayscale(1) brightness(1.2) contrast(1.1)"
+        : "";
 
   return (
     <button
       onClick={onClick}
-      className={`relative w-40 rounded-xl border-2 ${config.border} ${config.bg} overflow-hidden transition-all duration-300 hover:scale-105 cursor-pointer group ${isActive ? 'shadow-[0_0_15px_rgba(var(--primary),0.3)] border-primary/60' : ''}`}
+      className={`relative w-48 rounded-xl border-2 ${config.border} ${config.bg} overflow-hidden transition-all duration-300 hover:scale-105 cursor-pointer group ${isActive ? "shadow-[0_0_15px_rgba(var(--primary),0.3)] border-primary/60" : ""}`}
     >
       {isActive && (
         <div className="absolute top-2 left-2 z-30 flex items-center justify-center">
@@ -99,28 +120,39 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
             />
           </div>
         )}
-        
+
         <div className="absolute top-2 right-2 z-20">
-          <span className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
-            card.status === 'Alive' ? 'bg-green-500/20 text-green-400 border border-green-500/40' :
-            card.status === 'Dead' ? 'bg-red-500/20 text-red-400 border border-red-500/40' :
-            'bg-gray-500/20 text-gray-400 border border-gray-500/40'
-          }`}>
+          <span
+            className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
+              card.status === "Alive"
+                ? "bg-green-500/20 text-green-400 border border-green-500/40"
+                : card.status === "Dead"
+                  ? "bg-red-500/20 text-red-400 border border-red-500/40"
+                  : "bg-gray-500/20 text-gray-400 border border-gray-500/40"
+            }`}
+          >
             {card.status}
           </span>
         </div>
       </div>
 
-      <div className={`p-3 space-y-1 ${isFullArt ? 'bg-background/80 backdrop-blur-sm' : ''}`}>
+      <div
+        className={`p-3 space-y-1 ${isFullArt ? "bg-background/80 backdrop-blur-sm" : ""}`}
+      >
         <p className="font-display text-[10px] font-bold text-foreground truncate leading-tight">
           {card.characterName}
         </p>
+        <p className="text-[8px] text-muted-foreground uppercase tracking-widest">
+          <span>{card.origin}</span>
+        </p>
         <div className="flex items-center justify-between">
           <div className="flex items-center -space-x-1">
-            {types.map(tId => {
+            {types.map((tId) => {
               const Icon = typeIcons[tId];
               if (!Icon) return null;
-              return <Icon key={tId} className="w-3 h-3 text-muted-foreground" />;
+              return (
+                <Icon key={tId} className="w-3 h-3 text-muted-foreground" />
+              );
             })}
           </div>
           <div className="flex flex-col items-end">
@@ -136,7 +168,7 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
           </div>
         </div>
         <div className="pt-1 border-t border-border/50 flex items-center justify-between opacity-60">
-           <span className="text-[8px] font-body uppercase">{card.species}</span>
+          <span className="text-[8px] font-body uppercase">{card.species}</span>
         </div>
       </div>
     </button>

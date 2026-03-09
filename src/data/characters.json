@@ -6,14 +6,8 @@
     "species": "Human",
     "type": "",
     "gender": "Male",
-    "origin": {
-      "name": "Earth (C-137)",
-      "url": "https://rickandmortyapi.com/api/location/1"
-    },
-    "location": {
-      "name": "Citadel of Ricks",
-      "url": "https://rickandmortyapi.com/api/location/3"
-    },
+    "origin": "Earth (C-137)",
+    "location": "Citadel of Ricks",
     "customImage": "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
     "avatarId": 1,
     "baseMultiplier": 1000,
@@ -26,11 +20,8 @@
     "species": "Human",
     "type": "",
     "gender": "Male",
-    "origin": { "name": "unknown", "url": "" },
-    "location": {
-      "name": "Citadel of Ricks",
-      "url": "https://rickandmortyapi.com/api/location/3"
-    },
+    "origin": "unknown",
+    "location": "Citadel of Ricks",
     "avatarId": 2,
     "baseMultiplier": 25,
     "basePower": 150
@@ -42,14 +33,8 @@
     "species": "Human",
     "type": "",
     "gender": "Female",
-    "origin": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
-    "location": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
+    "origin": "Earth (Replacement Dimension)",
+    "location": "Earth (Replacement Dimension)",
     "avatarId": 3,
     "baseMultiplier": 45,
     "basePower": 100
@@ -61,14 +46,8 @@
     "species": "Human",
     "type": "",
     "gender": "Female",
-    "origin": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
-    "location": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
+    "origin": "Earth (Replacement Dimension)",
+    "location": "Earth (Replacement Dimension)",
     "avatarId": 4,
     "baseMultiplier": 50,
     "basePower": 15
@@ -80,14 +59,8 @@
     "species": "Human",
     "type": "",
     "gender": "Male",
-    "origin": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
-    "location": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
+    "origin": "Earth (Replacement Dimension)",
+    "location": "Earth (Replacement Dimension)",
     "avatarId": 5,
     "baseMultiplier": 150,
     "basePower": 1
@@ -99,14 +72,8 @@
     "species": "Alien",
     "type": "",
     "gender": "Female",
-    "origin": {
-      "name": "Abadango",
-      "url": "https://rickandmortyapi.com/api/location/2"
-    },
-    "location": {
-      "name": "Abadango",
-      "url": "https://rickandmortyapi.com/api/location/2"
-    },
+    "origin": "Abadango",
+    "location": "Abadango",
     "avatarId": 6,
     "baseMultiplier": 85,
     "basePower": 45
@@ -118,14 +85,8 @@
     "species": "Human",
     "type": "Genetic experiment",
     "gender": "Male",
-    "origin": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
-    "location": {
-      "name": "Testicle Monster Dimension",
-      "url": "https://rickandmortyapi.com/api/location/21"
-    },
+    "origin": "Earth (Replacement Dimension)",
+    "location": "Testicle Monster Dimension",
     "avatarId": 7,
     "baseMultiplier": 500,
     "basePower": 66
@@ -137,11 +98,8 @@
     "species": "Human",
     "type": "",
     "gender": "Male",
-    "origin": { "name": "unknown", "url": "" },
-    "location": {
-      "name": "Citadel of Ricks",
-      "url": "https://rickandmortyapi.com/api/location/3"
-    },
+    "origin": "unknown",
+    "location": "Citadel of Ricks",
     "avatarId": 8,
     "baseMultiplier": 250,
     "basePower": 450
@@ -153,14 +111,8 @@
     "species": "Human",
     "type": "",
     "gender": "Male",
-    "origin": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
-    "location": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
+    "origin": "Earth (Replacement Dimension)",
+    "location": "Earth (Replacement Dimension)",
     "avatarId": 9,
     "baseMultiplier": 1500,
     "basePower": 5
@@ -172,11 +124,8 @@
     "species": "Human",
     "type": "Superhuman (Ghost trains summoner)",
     "gender": "Male",
-    "origin": { "name": "unknown", "url": "" },
-    "location": {
-      "name": "Worldender's lair",
-      "url": "https://rickandmortyapi.com/api/location/4"
-    },
+    "origin": "unknown",
+    "location": "Worldender's lair",
     "avatarId": 10,
     "baseMultiplier": 100,
     "basePower": 300
@@ -188,14 +137,8 @@
     "species": "Human",
     "type": "",
     "gender": "Male",
-    "origin": {
-      "name": "Earth (C-137)",
-      "url": "https://rickandmortyapi.com/api/location/1"
-    },
-    "location": {
-      "name": "Earth (Replacement Dimension)",
-      "url": "https://rickandmortyapi.com/api/location/20"
-    },
+    "origin": "Earth (C-137)",
+    "location": "Earth (Replacement Dimension)",
     "avatarId": 11,
     "baseMultiplier": 5000,
     "basePower": 0
@@ -207,14 +150,8 @@
     "species": "Human",
     "type": "",
     "gender": "Male",
-    "origin": {
-      "name": "Earth (C-137)",
-      "url": "https://rickandmortyapi.com/api/location/1"
-    },
-    "location": {
-      "name": "Anatomy Park",
-      "url": "https://rickandmortyapi.com/api/location/5"
-    },
+    "origin": "Earth (C-137)",
+    "location": "Anatomy Park",
     "avatarId": 12,
     "baseMultiplier": 12,
     "basePower": 5

@@ -22,7 +22,7 @@
     "id": "mega",
     "name": "Mega Portal",
     "description": "Stable rift. High chance for Full Art and Holo entities.",
-    "cost": 5000,
+    "cost": 15000,
     "cardCount": 2,
     "color": "blue-500",
     "weights": {
@@ -41,7 +41,7 @@
     "id": "silver-rift",
     "name": "Silver Rift",
     "description": "A metallic breach. Increased chance for Silver variants.",
-    "cost": 12000,
+    "cost": 150000,
     "cardCount": 3,
     "color": "slate-400",
     "weights": {
@@ -60,7 +60,7 @@
     "id": "alchemists-portal",
     "name": "Alchemist Portal",
     "description": "Turning lead into gold. High chance for Gold and Silver variants.",
-    "cost": 50000,
+    "cost": 500000,
     "cardCount": 3,
     "color": "yellow-600",
     "weights": {
@@ -79,7 +79,7 @@
     "id": "void-breach",
     "name": "Void Breach",
     "description": "The reality is inverted. Only for the true collectors.",
-    "cost": 150000,
+    "cost": 1000000,
     "cardCount": 3,
     "color": "red-600",
     "weights": {
