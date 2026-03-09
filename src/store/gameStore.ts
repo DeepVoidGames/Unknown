@@ -18,7 +18,8 @@ export interface GameCard {
   characterName: string;
   types: string[]; // e.g. ["HOLO", "FULL_ART"]
   income: number;
-  avatarId: number;
+  avatarId?: number;
+  customImage?: string;
   status: string;
   species: string;
   timestamp: number;
@@ -90,6 +91,7 @@ const generateCard = (
     types: selectedTypes,
     income: finalIncome,
     avatarId: character.avatarId,
+    customImage: (character as any).customImage,
     status: character.status,
     species: character.species,
     timestamp

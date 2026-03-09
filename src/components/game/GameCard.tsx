@@ -47,11 +47,23 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
                      types.includes('HOLO') ? 'HOLO' : 
                      types.includes('RARE') ? 'RARE' : 
                      (types.includes('NORMAL') ? 'NORMAL' : 'COMMON');
+const config = rarityConfig[primaryType] || rarityConfig.COMMON;
 
-  const config = rarityConfig[primaryType] || rarityConfig.COMMON;
-  const imgSrc = `https://rickandmortyapi.com/api/character/avatar/${card.avatarId}.jpeg`;
+// IMAGE LOGIC: 1. customImage (URL or /img/...), 2. API avatarId, 3. Placeholder
+let imgSrc = 'https://rickandmortyapi.com/api/character/avatar/19.jpeg'; // Default placeholder
 
-  const imageFilter = isRevert ? 'invert(1) hue-rotate(180deg)' : 
+if (card.customImage) {
+  if (card.customImage.startsWith('http')) {
+    imgSrc = card.customImage; // External URL
+  } else {
+    imgSrc = card.customImage; // Local path like /img/char.png (relative to public)
+  }
+} else if (card.avatarId) {
+  imgSrc = `https://rickandmortyapi.com/api/character/avatar/${card.avatarId}.jpeg`;
+}
+
+const imageFilter = isRevert ? 'invert(1) hue-rotate(180deg)' : 
+...
                      isGold ? 'sepia(1) saturate(5) brightness(0.8) hue-rotate(-15deg)' : 
                      isSilver ? 'grayscale(1) brightness(1.2) contrast(1.1)' : '';
 
