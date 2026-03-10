@@ -1,5 +1,3 @@
-import { useEffect, useRef } from "react";
-import { useGameStore } from "@/store/gameStore";
 import { Header } from "@/components/game/Header";
 import { PortalArea } from "@/components/game/PortalArea";
 import { CollectionTab } from "@/components/game/CollectionTab";
@@ -7,50 +5,8 @@ import { Footer } from "@/components/game/Footer";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Package, Map, Beaker } from "lucide-react";
-import { toast } from "sonner";
-import { formatCurrency } from "@/lib/utils";
-import { GAME_CONFIG, calculateCurrentIncome } from "@/config/gameConfig";
 
 const Index = () => {
-  const offlineProcessed = useRef(false);
-
-  // Offline income calculation — runs once on mount
-  useEffect(() => {
-    if (offlineProcessed.current) return;
-    offlineProcessed.current = true;
-
-    const state = useGameStore.getState();
-    const elapsed = Math.min(
-      (Date.now() - state.lastSaved) / 1000,
-      GAME_CONFIG.MAX_OFFLINE_SECONDS,
-    );
-
-    if (elapsed > 10) {
-      const incomePerSecond = calculateCurrentIncome(state);
-      const earned = Math.floor(incomePerSecond * elapsed);
-      
-      if (earned > 0) {
-        state.updateSeeds(earned);
-        toast.success(`Welcome back!`, {
-          description: `You earned ${formatCurrency(earned)} Mega Seeds while away (${Math.floor(elapsed / 60)} min).`,
-        });
-      }
-    }
-  }, []);
-
-  // Idle tick — every 1s
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const state = useGameStore.getState();
-      const incomePerSecond = calculateCurrentIncome(state);
-      
-      if (incomePerSecond > 0) {
-        state.updateSeeds(incomePerSecond);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
