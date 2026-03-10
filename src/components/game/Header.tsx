@@ -3,6 +3,7 @@ import { Leaf, TrendingUp, Settings, Beaker, Library } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { formatNumber, formatCurrency } from '@/lib/utils';
+import { GAME_CONFIG, calculateCurrentIncome } from '@/config/gameConfig';
 
 export function Header() {
   const seeds = useGameStore((s) => s.seeds);
@@ -10,20 +11,14 @@ export function Header() {
   const inventory = useGameStore((s) => s.inventory);
   const upgrades = useGameStore((s) => s.upgrades);
 
-  const activeIncome = activeSlots.reduce(
-    (sum, slot) => sum + (slot?.income ?? 0),
-    0
-  );
-
   const inactiveCards = inventory.filter(
     (c) => !activeSlots.some((s) => s?.id === c.id)
   ).length;
   
-  const collectionBonus = inactiveCards; // +1% per inactive card
-  const labBonus = (upgrades.seeds || 0) * 5; // +5% per upgrade level
+  const collectionBonus = Math.round(inactiveCards * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS * 100);
+  const labBonus = Math.round((upgrades.seeds || 0) * GAME_CONFIG.UPGRADES.seeds.BONUS_PER_LEVEL * 100);
   
-  const totalMultiplier = (1 + collectionBonus / 100) * (1 + labBonus / 100);
-  const totalIncome = activeIncome * totalMultiplier;
+  const totalIncome = calculateCurrentIncome({ activeSlots, inventory, upgrades });
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/60 backdrop-blur-md">

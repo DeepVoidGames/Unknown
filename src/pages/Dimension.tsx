@@ -8,6 +8,7 @@ import { useGameStore, GameCard as GameCardType } from "@/store/gameStore";
 import { GameCard } from "@/components/game/GameCard";
 import { toast } from "sonner";
 import { formatNumber, formatCurrency } from "@/lib/utils";
+import { GAME_CONFIG } from "@/config/gameConfig";
 
 const Dimension = () => {
   const {
@@ -31,20 +32,20 @@ const Dimension = () => {
     if (inventory.length === 0) return null;
     const strongest = [...inventory].sort((a, b) => b.power - a.power)[0];
 
-    // Lab Power Upgrade: +5% per level
-    const powerMultiplier = 1 + upgrades.power * 0.05;
+    // Lab Power Upgrade
+    const powerMultiplier = 1 + upgrades.power * GAME_CONFIG.UPGRADES.power.BONUS_PER_LEVEL;
     const totalPower = Math.floor(strongest.power * powerMultiplier);
 
     return {
       card: strongest,
       basePower: strongest.power,
       totalPower,
-      bonusPercent: upgrades.power * 5,
+      bonusPercent: Math.round(upgrades.power * GAME_CONFIG.UPGRADES.power.BONUS_PER_LEVEL * 100),
     };
   }, [inventory, upgrades.power]);
 
   const handleStart = () => {
-    if (seeds < 1000) {
+    if (seeds < GAME_CONFIG.DIMENSION_ENTRY_COST) {
       toast.error("Not enough Mega Seeds!");
       return;
     }
@@ -61,11 +62,11 @@ const Dimension = () => {
     setIsFighting(true);
 
     setTimeout(() => {
-      if (dimensionLevel == 100) {
+      if (dimensionLevel >= GAME_CONFIG.DIMENSIONS.MAX_LEVEL) {
         toast.success(`EPIC VICTORY! You conquered the Dimension Rift!`, {
           description: `You've reached the maximum level and unlocked all rewards!`,
         });
-        resetDimension(1000000);
+        resetDimension(GAME_CONFIG.DIMENSIONS.MAX_LEVEL_REWARD);
       } else if (playerStats.totalPower >= currentEnemy.power) {
         const { bonus, milestoneUnlocked } = nextDimensionLevel();
 
@@ -82,7 +83,7 @@ const Dimension = () => {
           toast.success(`Victory! Level ${dimensionLevel} cleared.`);
         }
       } else {
-        const reward = dimensionLevel * 500;
+        const reward = dimensionLevel * GAME_CONFIG.DIMENSIONS.LEVEL_REWARD_MULTIPLIER;
         toast.error(`Defeat! You reached level ${dimensionLevel}.`, {
           description: `Final Reward: ${formatCurrency(reward)} Mega Seeds.`,
         });
@@ -119,7 +120,7 @@ const Dimension = () => {
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2 text-xs font-bold px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full">
                 <Beaker className="w-3.5 h-3.5" />
-                Lab Bonus: +{upgrades.power * 5}% Power
+                Lab Bonus: +{Math.round(upgrades.power * GAME_CONFIG.UPGRADES.power.BONUS_PER_LEVEL * 100)}% Power
               </div>
               <div className="flex items-center gap-2">
                 <History className="w-4 h-4 text-muted-foreground" />

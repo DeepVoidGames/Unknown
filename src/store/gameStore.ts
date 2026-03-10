@@ -3,45 +3,10 @@ import { persist } from "zustand/middleware";
 import characters from "@/data/characters.json";
 import cardTypes from "@/data/cardTypes.json";
 import packs from "@/data/packs.json";
+import { GAME_CONFIG } from "@/config/gameConfig";
+import { CardType, GameCard, GameState as BaseGameState } from "@/types/game";
 
-export interface CardType {
-  id: string;
-  label: string;
-  multiplier: number;
-  color: string;
-  canCombine: boolean;
-}
-
-export interface GameCard {
-  id: string;
-  name: string;
-  characterName: string;
-  types: string[]; // e.g. ["HOLO", "FULL_ART"]
-  income: number;
-  power: number;
-  avatarId?: number;
-  customImage?: string;
-  origin: string;
-  location: string;
-  status: string;
-  species: string;
-  timestamp: number;
-}
-
-interface GameState {
-  seeds: number;
-  inventory: GameCard[];
-  maxInventory: number;
-  activeSlots: (GameCard | null)[];
-  dimensionLevel: number;
-  maxDimensionLevel: number;
-  isDimensionActive: boolean;
-  currentEnemy: GameCard | null;
-  upgrades: {
-    seeds: number;
-    power: number;
-  };
-  lastSaved: number;
+interface GameState extends BaseGameState {
   addCard: (card: GameCard) => boolean;
   addCards: (cards: GameCard[]) => boolean;
   sellCard: (cardId: string, card?: GameCard) => void;
@@ -64,13 +29,8 @@ interface GameState {
 }
 
 const generateCard = (
-  weights: Record<string, number> = {
-    COMMON: 0.7,
-    RARE: 0.2,
-    HOLO: 0.08,
-    FULL_ART: 0.02,
-  },
-  combineChance: number = 0.1,
+  weights: Record<string, number> = GAME_CONFIG.CARD_GENERATION.DEFAULT_WEIGHTS,
+  combineChance: number = GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
 ): GameCard => {
   const character = characters[Math.floor(Math.random() * characters.length)];
 
@@ -132,9 +92,9 @@ const generateCard = (
 export const useGameStore = create<GameState>()(
   persist(
     (set, get) => ({
-      seeds: 100,
+      seeds: GAME_CONFIG.INITIAL_SEEDS,
       inventory: [],
-      maxInventory: 50,
+      maxInventory: GAME_CONFIG.INITIAL_MAX_INVENTORY,
       activeSlots: [null, null, null, null],
       dimensionLevel: 1,
       maxDimensionLevel: 1,
@@ -170,7 +130,7 @@ export const useGameStore = create<GameState>()(
           
           if (!targetCard) return s;
           
-          const sellPrice = Math.floor(targetCard.income * 100);
+          const sellPrice = Math.floor(targetCard.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER);
           return {
             inventory: s.inventory.filter((c) => c.id !== cardId),
             activeSlots: s.activeSlots.map((sl) =>
@@ -184,7 +144,7 @@ export const useGameStore = create<GameState>()(
         set((s) => {
           const cardsToSell = s.inventory.filter((c) => cardIds.includes(c.id));
           const totalProfit = cardsToSell.reduce(
-            (acc, c) => acc + Math.floor(c.income * 100),
+            (acc, c) => acc + Math.floor(c.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER),
             0,
           );
 
@@ -199,12 +159,9 @@ export const useGameStore = create<GameState>()(
 
       isPackUnlocked: (packId) => {
         const { maxDimensionLevel } = get();
-        if (packId === "standard") return true;
-        if (packId === "mega") return maxDimensionLevel >= 10;
-        if (packId === "silver-rift") return maxDimensionLevel >= 25;
-        if (packId === "alchemists-portal") return maxDimensionLevel >= 50;
-        if (packId === "void-breach") return maxDimensionLevel >= 100;
-        return false;
+        const reqLevel = GAME_CONFIG.DIMENSIONS.PACK_UNLOCKS[packId];
+        if (reqLevel === undefined) return false;
+        return maxDimensionLevel >= reqLevel;
       },
 
       buyPack: (packId) => {
@@ -250,16 +207,15 @@ export const useGameStore = create<GameState>()(
 
       startDimension: () => {
         const { seeds, generateRandomCard } = get();
-        if (seeds < 1000) return false;
+        if (seeds < GAME_CONFIG.DIMENSION_ENTRY_COST) return false;
         
         const enemy = generateRandomCard(
-          { COMMON: 0.6, RARE: 0.3, HOLO: 0.08, FULL_ART: 0.02 },
-          0.1,
+          GAME_CONFIG.CARD_GENERATION.ENEMY_WEIGHTS,
+          GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
         );
-        // Strength scale for lvl 1 is already handled by base power
 
         set((s) => ({
-          seeds: s.seeds - 1000,
+          seeds: s.seeds - GAME_CONFIG.DIMENSION_ENTRY_COST,
           isDimensionActive: true,
           dimensionLevel: 1,
           currentEnemy: enemy
@@ -272,21 +228,18 @@ export const useGameStore = create<GameState>()(
         let bonus = 0;
         let milestoneUnlocked = null;
 
-        if ((dimensionLevel + 1) % 5 === 0) {
-          bonus = (dimensionLevel + 1) * 200;
+        if ((dimensionLevel + 1) % GAME_CONFIG.DIMENSIONS.BONUS_STEP === 0) {
+          bonus = (dimensionLevel + 1) * GAME_CONFIG.DIMENSIONS.BONUS_AMOUNT;
         }
 
         const nextLvl = dimensionLevel + 1;
-        if (nextLvl === 10) milestoneUnlocked = "Mega Portal";
-        if (nextLvl === 25) milestoneUnlocked = "Silver Rift";
-        if (nextLvl === 50) milestoneUnlocked = "Alchemist Portal";
-        if (nextLvl === 100) milestoneUnlocked = "Void Breach";
+        milestoneUnlocked = GAME_CONFIG.DIMENSIONS.MILESTONES[nextLvl] || null;
 
         const newEnemy = generateRandomCard(
-          { COMMON: 0.6, RARE: 0.3, HOLO: 0.08, FULL_ART: 0.02 },
-          0.1,
+          GAME_CONFIG.CARD_GENERATION.ENEMY_WEIGHTS,
+          GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
         );
-        const scaleFactor = 1 + (nextLvl - 1) * 0.25;
+        const scaleFactor = 1 + (nextLvl - 1) * GAME_CONFIG.DIMENSIONS.SCALE_FACTOR;
         newEnemy.power = Math.floor(newEnemy.power * scaleFactor);
 
         set((s) => {
@@ -315,14 +268,12 @@ export const useGameStore = create<GameState>()(
       getUpgradeCost: (type) => {
         const { upgrades } = get();
         const level = upgrades[type];
-        const baseCost = type === "seeds" ? 500 : 800;
+        const config = GAME_CONFIG.UPGRADES[type];
 
-        // Exponential growth: base * 1.5^level.
-        // Significant jump every 10 levels (multiplier * 5)
-        let cost = baseCost * Math.pow(1.6, level);
-        const jumps = Math.floor(level / 10);
+        let cost = config.BASE_COST * Math.pow(config.COST_EXPONENT, level);
+        const jumps = Math.floor(level / config.JUMP_THRESHOLD);
         if (jumps > 0) {
-          cost = cost * Math.pow(5, jumps);
+          cost = cost * Math.pow(config.JUMP_MULTIPLIER, jumps);
         }
 
         return Math.floor(cost);
@@ -346,9 +297,9 @@ export const useGameStore = create<GameState>()(
 
       hardReset: () => {
         set({
-          seeds: 100,
+          seeds: GAME_CONFIG.INITIAL_SEEDS,
           inventory: [],
-          maxInventory: 50,
+          maxInventory: GAME_CONFIG.INITIAL_MAX_INVENTORY,
           activeSlots: [null, null, null, null],
           dimensionLevel: 1,
           maxDimensionLevel: 1,

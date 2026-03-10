@@ -6,6 +6,7 @@ import { Package, Sparkles, X, ChevronRight, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/utils';
 import packs from '@/data/packs.json';
+import { GAME_CONFIG } from '@/config/gameConfig';
 
 interface PackOpeningProps {
   packId: string;
@@ -98,8 +99,9 @@ export function PackOpening({ packId }: PackOpeningProps) {
   const handleSellCard = (card: CardType) => {
     sellCard(card.id, card);
     setSoldCards((prev) => [...prev, card.id]);
+    const sellPrice = Math.floor(card.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER);
     toast.success(`${card.characterName} sold!`, {
-      description: `Gained ${formatCurrency(Math.floor(card.income * 100))} Mega Seeds.`,
+      description: `Gained ${formatCurrency(sellPrice)} Mega Seeds.`,
     });
   };
 
@@ -116,11 +118,9 @@ export function PackOpening({ packId }: PackOpeningProps) {
   };
 
   const getUnlockRequirement = (id: string) => {
-    if (id === 'mega') return 'Dimension Lvl 10';
-    if (id === 'silver-rift') return 'Dimension Lvl 25';
-    if (id === 'alchemists-portal') return 'Dimension Lvl 50';
-    if (id === 'void-breach') return 'Dimension Lvl 100';
-    return null;
+    const reqLevel = GAME_CONFIG.DIMENSIONS.PACK_UNLOCKS[id];
+    if (reqLevel === undefined || reqLevel === 0) return null;
+    return `Dimension Lvl ${reqLevel}`;
   };
 
   const colorClass = pack.id === 'mega' ? 'text-blue-400' : pack.id === 'central-finite-curve' ? 'text-purple-400' : 'text-primary';
@@ -238,7 +238,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
                               className="w-full font-bold text-[10px] h-8 bg-red-950/40 hover:bg-red-900 border border-red-500/50"
                               onClick={() => handleSellCard(card)}
                             >
-                              SELL FOR {formatCurrency(Math.floor(card.income * 100))}
+                              SELL FOR {formatCurrency(Math.floor(card.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER))}
                             </Button>
                           )}
                           {soldCards.includes(card.id) && (
