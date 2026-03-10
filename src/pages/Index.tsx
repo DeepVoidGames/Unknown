@@ -9,8 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Package, Map, Beaker } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
-
-const MAX_OFFLINE_SECONDS = 24 * 60 * 60; // 24h
+import { GAME_CONFIG, calculateCurrentIncome } from "@/config/gameConfig";
 
 const Index = () => {
   const offlineProcessed = useRef(false);
@@ -23,23 +22,13 @@ const Index = () => {
     const state = useGameStore.getState();
     const elapsed = Math.min(
       (Date.now() - state.lastSaved) / 1000,
-      MAX_OFFLINE_SECONDS,
+      GAME_CONFIG.MAX_OFFLINE_SECONDS,
     );
 
     if (elapsed > 10) {
-      const activeIncome = state.activeSlots.reduce(
-        (sum, slot) => sum + (slot?.income ?? 0),
-        0,
-      );
-      const inactiveCards = state.inventory.filter(
-        (c) => !state.activeSlots.some((s) => s?.id === c.id),
-      ).length;
-      const bonus = 1 + inactiveCards / 100;
-
-      // Apply Upgrade Multiplier (5% per level)
-      const upgradeBonus = 1 + state.upgrades.seeds * 0.05;
-
-      const earned = Math.floor(activeIncome * bonus * upgradeBonus * elapsed);
+      const incomePerSecond = calculateCurrentIncome(state);
+      const earned = Math.floor(incomePerSecond * elapsed);
+      
       if (earned > 0) {
         state.updateSeeds(earned);
         toast.success(`Welcome back!`, {
@@ -53,21 +42,10 @@ const Index = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const state = useGameStore.getState();
-      const activeIncome = state.activeSlots.reduce(
-        (sum, slot) => sum + (slot?.income ?? 0),
-        0,
-      );
-      const inactiveCards = state.inventory.filter(
-        (c) => !state.activeSlots.some((s) => s?.id === c.id),
-      ).length;
-      const bonus = 1 + inactiveCards / 100;
-
-      // Apply Upgrade Multiplier (5% per level)
-      const upgradeBonus = 1 + state.upgrades.seeds * 0.05;
-
-      const earned = activeIncome * bonus * upgradeBonus;
-      if (earned > 0) {
-        state.updateSeeds(earned);
+      const incomePerSecond = calculateCurrentIncome(state);
+      
+      if (incomePerSecond > 0) {
+        state.updateSeeds(incomePerSecond);
       }
     }, 1000);
     return () => clearInterval(interval);

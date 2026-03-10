@@ -1,4 +1,4 @@
-import { type GameCard as GameCardType } from "@/store/gameStore";
+import { type GameCard as GameCardType } from "@/types/game";
 import {
   Sparkles,
   Zap,

@@ -13,6 +13,7 @@ import {
 import { useGameStore } from "@/store/gameStore";
 import { toast } from "sonner";
 import { formatNumber, formatCurrency } from "@/lib/utils";
+import { GAME_CONFIG } from "@/config/gameConfig";
 
 const Upgrades = () => {
   const { seeds, upgrades, buyUpgrade, getUpgradeCost } = useGameStore();
@@ -35,7 +36,8 @@ const Upgrades = () => {
 
   const getEffect = (type: "seeds" | "power") => {
     const level = upgrades[type];
-    return `+${(level * 5).toFixed(0)}%`;
+    const bonus = GAME_CONFIG.UPGRADES[type].BONUS_PER_LEVEL;
+    return `+${(level * bonus * 100).toFixed(0)}%`;
   };
 
   const upgradesList = [
@@ -144,7 +146,7 @@ const Upgrades = () => {
                         </p>
                         <div className="flex items-center gap-1">
                           <p className="text-lg font-bold text-foreground">
-                            +{((level + 1) * 5).toFixed(0)}%
+                            + {((level + 1) * GAME_CONFIG.UPGRADES[type].BONUS_PER_LEVEL * 100).toFixed(0)}%
                           </p>
                           <ChevronUp className="w-4 h-4 text-green-500" />
                         </div>

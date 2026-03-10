@@ -1,8 +1,8 @@
-import { Github, Info } from 'lucide-react';
+import { Github, Info } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
-  
+
   return (
     <footer className="w-full py-6 px-6 border-t border-border bg-card/20 mt-auto">
       <div className="max-w-7xl mx-auto flex flex-col items-center gap-4">
@@ -15,8 +15,9 @@ export function Footer() {
 
         <div className="max-w-4xl text-center space-y-2">
           <p className="text-[10px] text-muted-foreground/80 leading-tight font-body">
-            Purely hobbyist, non-commercial open-source project. All character names, images, and assets from "Rick and
-            Morty" are property of <strong>Adult Swim, Warner Bros. Discovery</strong>.
+            Purely hobbyist, non-commercial open-source project. All character
+            names, images, and assets from "Rick and Morty" are property of{" "}
+            <strong>Adult Swim, Warner Bros. Discovery</strong>.
           </p>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-x-4 gap-y-1 opacity-60">

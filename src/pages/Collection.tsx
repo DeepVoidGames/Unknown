@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useGameStore, GameCard as CardType } from '@/store/gameStore';
+import { useGameStore } from '@/store/gameStore';
 import { Header } from '@/components/game/Header';
 import { GameCard } from '@/components/game/GameCard';
 import { Footer } from '@/components/game/Footer';
@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Search, Trash2, FilterX, CheckCircle2, Circle, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
+import { GAME_CONFIG } from '@/config/gameConfig';
 
 const Collection = () => {
   const inventory = useGameStore((s) => s.inventory);
@@ -56,7 +57,7 @@ const Collection = () => {
     
     const totalProfit = inventory
       .filter(c => selectedIds.includes(c.id))
-      .reduce((acc, c) => acc + (c.income * 100), 0);
+      .reduce((acc, c) => acc + (c.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER), 0);
 
     if (confirm(`Sell ${selectedIds.length} selected cards for ${totalProfit.toLocaleString()} Mega Seeds?`)) {
       sellCards(selectedIds);
@@ -189,7 +190,7 @@ const Collection = () => {
             <div className="text-destructive-foreground">
               <p className="font-display font-bold text-lg">{selectedIds.length} Selected</p>
               <p className="text-xs opacity-80">
-                Total: {inventory.filter(c => selectedIds.includes(c.id)).reduce((acc, c) => acc + (c.income * 100), 0).toLocaleString()} Seeds
+                Total: {inventory.filter(c => selectedIds.includes(c.id)).reduce((acc, c) => acc + (c.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER), 0).toLocaleString()} Seeds
               </p>
             </div>
             <div className="flex gap-2">
