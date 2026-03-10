@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useGameStore, GameCard as CardType } from '@/store/gameStore';
-import { GameCard } from './GameCard';
-import { Button } from '@/components/ui/button';
-import { Package, Sparkles, X, ChevronRight, Lock } from 'lucide-react';
-import { toast } from 'sonner';
-import { formatCurrency } from '@/lib/utils';
-import packs from '@/data/packs.json';
-import { GAME_CONFIG } from '@/config/gameConfig';
+import { useState, useEffect } from "react";
+import { useGameStore } from "@/store/gameStore";
+import { GameCard } from "./GameCard";
+import { Button } from "@/components/ui/button";
+import { Package, Sparkles, X, ChevronRight, Lock } from "lucide-react";
+import { toast } from "sonner";
+import { formatCurrency } from "@/lib/utils";
+import packs from "@/data/packs.json";
+import { GAME_CONFIG } from "@/config/gameConfig";
+import { GameCard as GameCardType } from "@/types/game";
 
 interface PackOpeningProps {
   packId: string;
@@ -20,11 +21,11 @@ export function PackOpening({ packId }: PackOpeningProps) {
   const addCards = useGameStore((s) => s.addCards);
   const isUnlocked = useGameStore((s) => s.isPackUnlocked(packId));
 
-  const pack = packs.find(p => p.id === packId);
+  const pack = packs.find((p) => p.id === packId);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
-  const [revealedCards, setRevealedCards] = useState<CardType[]>([]);
+  const [revealedCards, setRevealedCards] = useState<GameCardType[]>([]);
   const [showCards, setShowCards] = useState<number[]>([]);
   const [soldCards, setSoldCards] = useState<string[]>([]);
   const [addedToInventory, setAddedToInventory] = useState(false);
@@ -35,7 +36,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
   useEffect(() => {
     if (isOpening) {
       const interval = setInterval(() => {
-        setPortalVibration(v => (v + 1) % 5);
+        setPortalVibration((v) => (v + 1) % 5);
       }, 50);
       return () => clearInterval(interval);
     }
@@ -45,27 +46,29 @@ export function PackOpening({ packId }: PackOpeningProps) {
 
   const handleBuyPack = () => {
     if (!isUnlocked) {
-      toast.error('Portal Locked!', {
-        description: 'Reach higher dimension levels to unlock this portal.',
+      toast.error("Portal Locked!", {
+        description: "Reach higher dimension levels to unlock this portal.",
       });
       return;
     }
 
     if (inventory.length >= maxInventory) {
-      toast.error('Inventory Full!', {
-        description: 'Sell some cards to make room for new ones.',
+      toast.error("Inventory Full!", {
+        description: "Sell some cards to make room for new ones.",
       });
       return;
     }
 
     if (seeds < pack.cost) {
-      toast.error('Not enough Mega Seeds!');
+      toast.error("Not enough Mega Seeds!");
       return;
     }
 
     // If we're already in a portal (Open Again), add current cards to inventory first if not already added
     if (showCards.length > 0 && !addedToInventory) {
-      const remainingCards = revealedCards.filter(c => !soldCards.includes(c.id));
+      const remainingCards = revealedCards.filter(
+        (c) => !soldCards.includes(c.id),
+      );
       addCards(remainingCards);
     }
 
@@ -77,7 +80,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
       setShowCards([]);
       setSoldCards([]);
       setAddedToInventory(false);
-      
+
       setTimeout(() => {
         setIsOpening(false);
       }, 2000);
@@ -90,16 +93,20 @@ export function PackOpening({ packId }: PackOpeningProps) {
     setShowCards(newShowCards);
 
     if (newShowCards.length === pack.cardCount) {
-      const remainingCards = revealedCards.filter(c => !soldCards.includes(c.id));
+      const remainingCards = revealedCards.filter(
+        (c) => !soldCards.includes(c.id),
+      );
       addCards(remainingCards);
       setAddedToInventory(true);
     }
   };
 
-  const handleSellCard = (card: CardType) => {
+  const handleSellCard = (card: GameCardType) => {
     sellCard(card.id, card);
     setSoldCards((prev) => [...prev, card.id]);
-    const sellPrice = Math.floor(card.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER);
+    const sellPrice = Math.floor(
+      card.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER,
+    );
     toast.success(`${card.characterName} sold!`, {
       description: `Gained ${formatCurrency(sellPrice)} Mega Seeds.`,
     });
@@ -107,7 +114,9 @@ export function PackOpening({ packId }: PackOpeningProps) {
 
   const closePortal = () => {
     if (!addedToInventory) {
-      const remainingCards = revealedCards.filter(c => !soldCards.includes(c.id));
+      const remainingCards = revealedCards.filter(
+        (c) => !soldCards.includes(c.id),
+      );
       addCards(remainingCards);
     }
     setIsOpen(false);
@@ -123,23 +132,39 @@ export function PackOpening({ packId }: PackOpeningProps) {
     return `Dimension Lvl ${reqLevel}`;
   };
 
-  const colorClass = pack.id === 'mega' ? 'text-blue-400' : pack.id === 'central-finite-curve' ? 'text-purple-400' : 'text-primary';
-  const borderClass = pack.id === 'mega' ? 'border-blue-500/50' : pack.id === 'central-finite-curve' ? 'border-purple-500/50' : 'border-primary/50';
+  const colorClass =
+    pack.id === "mega"
+      ? "text-blue-400"
+      : pack.id === "central-finite-curve"
+        ? "text-purple-400"
+        : "text-primary";
+  const borderClass =
+    pack.id === "mega"
+      ? "border-blue-500/50"
+      : pack.id === "central-finite-curve"
+        ? "border-purple-500/50"
+        : "border-primary/50";
 
   return (
-    <div className={`p-6 rounded-2xl bg-card border ${borderClass} flex flex-col md:flex-row items-center gap-6 group transition-all ${!isUnlocked ? 'grayscale opacity-60' : 'hover:bg-muted/10'}`}>
+    <div
+      className={`p-6 rounded-2xl bg-card border ${borderClass} flex flex-col md:flex-row items-center gap-6 group transition-all ${!isUnlocked ? "grayscale opacity-60" : "hover:bg-muted/10"}`}
+    >
       <div className="relative">
-        <div className={`w-24 h-24 rounded-3xl bg-muted/20 flex items-center justify-center relative shadow-2xl overflow-hidden`}>
-          <Package className={`w-12 h-12 ${colorClass} ${isUnlocked && 'group-hover:scale-110'} transition-transform`} />
+        <div
+          className={`w-24 h-24 rounded-3xl bg-muted/20 flex items-center justify-center relative shadow-2xl overflow-hidden`}
+        >
+          <Package
+            className={`w-12 h-12 ${colorClass} ${isUnlocked && "group-hover:scale-110"} transition-transform`}
+          />
           <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-50" />
           {!isUnlocked && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-               <Lock className="w-8 h-8 text-white/80" />
+              <Lock className="w-8 h-8 text-white/80" />
             </div>
           )}
         </div>
-        {pack.id !== 'standard' && isUnlocked && (
-           <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-pulse" />
+        {pack.id !== "standard" && isUnlocked && (
+          <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-pulse" />
         )}
       </div>
 
@@ -152,98 +177,139 @@ export function PackOpening({ packId }: PackOpeningProps) {
             </span>
           )}
         </div>
-        <p className="text-xs text-muted-foreground font-body max-w-xs">{pack.description}</p>
-        
+        <p className="text-xs text-muted-foreground font-body max-w-xs">
+          {pack.description}
+        </p>
+
         <div className="flex flex-wrap justify-center md:justify-start gap-3 pt-2">
           {Object.entries(pack.weights)
             .filter(([_, chance]) => (chance as number) > 0)
             .map(([type, chance]) => (
-              <div key={type} className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/40 border border-border/50">
-                 <span className="text-[8px] font-bold uppercase opacity-60 tracking-tighter">{type}</span>
-                 <span className="text-[10px] font-display font-bold text-foreground">{(chance as number * 100).toFixed(0)}%</span>
+              <div
+                key={type}
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-muted/40 border border-border/50"
+              >
+                <span className="text-[8px] font-bold uppercase opacity-60 tracking-tighter">
+                  {type}
+                </span>
+                <span className="text-[10px] font-display font-bold text-foreground">
+                  {((chance as number) * 100).toFixed(0)}%
+                </span>
               </div>
             ))}
           {pack.combineChance > 0 && (
             <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20">
-               <span className="text-[8px] font-bold uppercase text-primary tracking-tighter">Merge</span>
-               <span className="text-[10px] font-display font-bold text-primary">{(pack.combineChance * 100).toFixed(0)}%</span>
+              <span className="text-[8px] font-bold uppercase text-primary tracking-tighter">
+                Merge
+              </span>
+              <span className="text-[10px] font-display font-bold text-primary">
+                {(pack.combineChance * 100).toFixed(0)}%
+              </span>
             </div>
           )}
         </div>
       </div>
 
-      <Button 
-        onClick={handleBuyPack} 
+      <Button
+        onClick={handleBuyPack}
         disabled={seeds < pack.cost || !isUnlocked}
         className="font-display font-bold min-w-[140px] shadow-xl"
-        variant={!isUnlocked ? 'outline' : 'default'}
+        variant={!isUnlocked ? "outline" : "default"}
       >
-        {!isUnlocked ? 'LOCKED' : `Buy for ${formatCurrency(pack.cost)}`}
+        {!isUnlocked ? "LOCKED" : `Buy for ${formatCurrency(pack.cost)}`}
       </Button>
 
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-2xl p-6 overflow-hidden">
           {/* Background Portal FX */}
-          <div className={`absolute inset-0 opacity-20 pointer-events-none transition-all duration-1000 ${isOpening ? 'scale-150' : 'scale-100'}`}>
+          <div
+            className={`absolute inset-0 opacity-20 pointer-events-none transition-all duration-1000 ${isOpening ? "scale-150" : "scale-100"}`}
+          >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary blur-[120px] animate-pulse" />
           </div>
 
           <div className="relative w-full max-w-6xl flex flex-col items-center">
             {isOpening ? (
-              <div 
+              <div
                 className="flex flex-col items-center gap-8 animate-in zoom-in duration-300"
-                style={{ transform: `translate(${portalVibration}px, ${portalVibration}px)` }}
+                style={{
+                  transform: `translate(${portalVibration}px, ${portalVibration}px)`,
+                }}
               >
                 <div className="relative">
-                   <div className="absolute inset-0 blur-3xl bg-primary/40 animate-pulse" />
-                   <div className="w-56 h-72 bg-gradient-to-b from-primary/20 to-primary/60 rounded-3xl border-4 border-primary shadow-[0_0_100px_rgba(var(--primary),0.6)] flex items-center justify-center relative overflow-hidden">
-                      <Package className="w-24 h-24 text-white animate-bounce drop-shadow-2xl" />
-                      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,transparent,rgba(0,0,0,0.5))]" />
-                   </div>
+                  <div className="absolute inset-0 blur-3xl bg-primary/40 animate-pulse" />
+                  <div className="w-56 h-72 bg-gradient-to-b from-primary/20 to-primary/60 rounded-3xl border-4 border-primary shadow-[0_0_100px_rgba(var(--primary),0.6)] flex items-center justify-center relative overflow-hidden">
+                    <Package className="w-24 h-24 text-white animate-bounce drop-shadow-2xl" />
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,transparent,rgba(0,0,0,0.5))]" />
+                  </div>
                 </div>
                 <div className="text-center space-y-2">
                   <h2 className="text-4xl font-display font-bold text-primary tracking-[0.2em] animate-pulse">
                     STABILIZING RIFT
                   </h2>
-                  <p className="text-muted-foreground font-body text-sm">Accessing Rick's Secret Stash...</p>
+                  <p className="text-muted-foreground font-body text-sm">
+                    Accessing Rick's Secret Stash...
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="w-full flex flex-col items-center gap-12 animate-in fade-in duration-1000">
                 <div className="text-center space-y-2">
                   <h2 className="text-4xl font-display font-bold text-foreground">
-                    {showCards.length === pack.cardCount ? 'ENTITY ACQUIRED' : 'MANIFESTING...'}
+                    {showCards.length === pack.cardCount
+                      ? "ENTITY ACQUIRED"
+                      : "MANIFESTING..."}
                   </h2>
-                  <p className="text-muted-foreground">Click to stabilize the interdimensional form</p>
+                  <p className="text-muted-foreground">
+                    Click to stabilize the interdimensional form
+                  </p>
                   <div className="flex items-center justify-center gap-2 pt-2">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Inventory:</span>
-                    <span className={`text-[10px] font-bold ${inventory.length >= maxInventory ? 'text-red-500' : 'text-primary'}`}>
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                      Inventory:
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold ${inventory.length >= maxInventory ? "text-red-500" : "text-primary"}`}
+                    >
                       {inventory.length} / {maxInventory}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-wrap justify-center gap-8 md:gap-12">
                   {revealedCards.map((card, i) => (
                     <div key={i} className="flex flex-col items-center gap-4">
                       {showCards.includes(i) ? (
                         <div className="flex flex-col items-center gap-3 animate-in flip-in-y duration-700">
-                          <div className={soldCards.includes(card.id) ? 'grayscale opacity-40 pointer-events-none' : ''}>
+                          <div
+                            className={
+                              soldCards.includes(card.id)
+                                ? "grayscale opacity-40 pointer-events-none"
+                                : ""
+                            }
+                          >
                             <GameCard card={card} />
                           </div>
                           {!soldCards.includes(card.id) && (
-                            <Button 
-                              variant="destructive" 
+                            <Button
+                              variant="destructive"
                               size="sm"
                               className="w-full font-bold text-[10px] h-8 bg-red-950/40 hover:bg-red-900 border border-red-500/50"
                               onClick={() => handleSellCard(card)}
                             >
-                              SELL FOR {formatCurrency(Math.floor(card.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER))}
+                              SELL FOR{" "}
+                              {formatCurrency(
+                                Math.floor(
+                                  card.income *
+                                    GAME_CONFIG.SELL_PRICE_MULTIPLIER,
+                                ),
+                              )}
                             </Button>
                           )}
                           {soldCards.includes(card.id) && (
                             <div className="h-8 flex items-center justify-center">
-                              <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Sold</span>
+                              <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
+                                Sold
+                              </span>
                             </div>
                           )}
                         </div>
@@ -256,7 +322,9 @@ export function PackOpening({ packId }: PackOpeningProps) {
                           <div className="w-14 h-14 rounded-full bg-background/50 flex items-center justify-center group-hover:rotate-12 transition-transform shadow-inner">
                             <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-primary" />
                           </div>
-                          <span className="text-[10px] font-display font-bold text-muted-foreground tracking-[0.3em] uppercase group-hover:text-primary">DECRYPT</span>
+                          <span className="text-[10px] font-display font-bold text-muted-foreground tracking-[0.3em] uppercase group-hover:text-primary">
+                            DECRYPT
+                          </span>
                         </button>
                       )}
                     </div>
@@ -265,19 +333,21 @@ export function PackOpening({ packId }: PackOpeningProps) {
 
                 {showCards.length === pack.cardCount && (
                   <div className="flex flex-col md:flex-row items-center gap-4 animate-in slide-in-from-bottom-8">
-                    <Button 
-                      onClick={closePortal} 
-                      size="lg" 
+                    <Button
+                      onClick={closePortal}
+                      size="lg"
                       variant="outline"
                       className="font-display font-bold px-12 py-8 text-xl shadow-2xl"
                     >
                       RETURN TO CITADEL
                     </Button>
-                    <Button 
-                      onClick={handleBuyPack} 
-                      size="lg" 
-                      disabled={seeds < pack.cost || inventory.length >= maxInventory}
-                      className="font-display font-bold px-12 py-8 text-xl shadow-2xl border-2 border-primary"
+                    <Button
+                      onClick={handleBuyPack}
+                      size="lg"
+                      disabled={
+                        seeds < pack.cost || inventory.length >= maxInventory
+                      }
+                      className="font-display font-bold px-12 py-8 text-xl shadow-2xl"
                     >
                       OPEN AGAIN ({formatCurrency(pack.cost)})
                     </Button>

@@ -2,8 +2,23 @@ export interface CardType {
   id: string;
   label: string;
   multiplier: number;
-  color: string;
   canCombine: boolean;
+  combinesWith?: string[];
+}
+
+export interface Character {
+  id: number;
+  name: string;
+  status: string;
+  species: string;
+  type: string;
+  gender: string;
+  origin: string;
+  location: string;
+  avatarId: number;
+  baseMultiplier: number;
+  basePower: number;
+  customImage?: string;
 }
 
 export interface GameCard {

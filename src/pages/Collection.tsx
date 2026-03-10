@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useGameStore, GameCard as CardType } from '@/store/gameStore';
+import { useGameStore } from '@/store/gameStore';
 import { Header } from '@/components/game/Header';
 import { GameCard } from '@/components/game/GameCard';
 import { Footer } from '@/components/game/Footer';

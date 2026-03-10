@@ -4,7 +4,12 @@ import characters from "@/data/characters.json";
 import cardTypes from "@/data/cardTypes.json";
 import packs from "@/data/packs.json";
 import { GAME_CONFIG } from "@/config/gameConfig";
-import { CardType, GameCard, GameState as BaseGameState } from "@/types/game";
+import {
+  CardType,
+  GameCard,
+  Character,
+  GameState as BaseGameState,
+} from "@/types/game";
 
 interface GameState extends BaseGameState {
   addCard: (card: GameCard) => boolean;
@@ -28,11 +33,15 @@ interface GameState extends BaseGameState {
   setLastSaved: (ts: number) => void;
 }
 
+type PersistedGameState = GameState;
+
 const generateCard = (
   weights: Record<string, number> = GAME_CONFIG.CARD_GENERATION.DEFAULT_WEIGHTS,
   combineChance: number = GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
 ): GameCard => {
-  const character = characters[Math.floor(Math.random() * characters.length)];
+  const character = (characters as Character[])[
+    Math.floor(Math.random() * characters.length)
+  ];
 
   const typeRoll = Math.random();
   let baseTypeId = "COMMON";
@@ -46,11 +55,11 @@ const generateCard = (
     }
   }
 
-  const baseType = cardTypes.find((t) => t.id === baseTypeId);
+  const baseType = (cardTypes as CardType[]).find((t) => t.id === baseTypeId);
   const selectedTypes = [baseTypeId];
 
   if (baseType?.canCombine && Math.random() < combineChance) {
-    const validExtraTypes = (baseType as any).combinesWith || [];
+    const validExtraTypes = baseType.combinesWith || [];
     if (validExtraTypes.length > 0) {
       const extraTypeId =
         validExtraTypes[Math.floor(Math.random() * validExtraTypes.length)];
@@ -61,14 +70,12 @@ const generateCard = (
   }
 
   const combinedMultiplier = selectedTypes.reduce((acc, typeId) => {
-    const type = cardTypes.find((t) => t.id === typeId);
+    const type = (cardTypes as CardType[]).find((t) => t.id === typeId);
     return acc * (type?.multiplier || 1);
   }, 1);
 
   const finalIncome = Math.floor(character.baseMultiplier * combinedMultiplier);
-  const finalPower = Math.floor(
-    (character as any).basePower * combinedMultiplier,
-  );
+  const finalPower = Math.floor(character.basePower * combinedMultiplier);
   const timestamp = Date.now();
   const uuid = crypto.randomUUID();
 
@@ -80,7 +87,7 @@ const generateCard = (
     income: finalIncome,
     power: finalPower,
     avatarId: character.avatarId,
-    customImage: (character as any).customImage,
+    customImage: character.customImage,
     origin: character.origin,
     location: character.location,
     status: character.status,
@@ -127,10 +134,12 @@ export const useGameStore = create<GameState>()(
         set((s) => {
           const cardInInventory = s.inventory.find((c) => c.id === cardId);
           const targetCard = cardInInventory || card;
-          
+
           if (!targetCard) return s;
-          
-          const sellPrice = Math.floor(targetCard.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER);
+
+          const sellPrice = Math.floor(
+            targetCard.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER,
+          );
           return {
             inventory: s.inventory.filter((c) => c.id !== cardId),
             activeSlots: s.activeSlots.map((sl) =>
@@ -144,7 +153,8 @@ export const useGameStore = create<GameState>()(
         set((s) => {
           const cardsToSell = s.inventory.filter((c) => cardIds.includes(c.id));
           const totalProfit = cardsToSell.reduce(
-            (acc, c) => acc + Math.floor(c.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER),
+            (acc, c) =>
+              acc + Math.floor(c.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER),
             0,
           );
 
@@ -208,7 +218,7 @@ export const useGameStore = create<GameState>()(
       startDimension: () => {
         const { seeds, generateRandomCard } = get();
         if (seeds < GAME_CONFIG.DIMENSION_ENTRY_COST) return false;
-        
+
         const enemy = generateRandomCard(
           GAME_CONFIG.CARD_GENERATION.ENEMY_WEIGHTS,
           GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
@@ -218,7 +228,7 @@ export const useGameStore = create<GameState>()(
           seeds: s.seeds - GAME_CONFIG.DIMENSION_ENTRY_COST,
           isDimensionActive: true,
           dimensionLevel: 1,
-          currentEnemy: enemy
+          currentEnemy: enemy,
         }));
         return true;
       },
@@ -239,7 +249,8 @@ export const useGameStore = create<GameState>()(
           GAME_CONFIG.CARD_GENERATION.ENEMY_WEIGHTS,
           GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
         );
-        const scaleFactor = 1 + (nextLvl - 1) * GAME_CONFIG.DIMENSIONS.SCALE_FACTOR;
+        const scaleFactor =
+          1 + (nextLvl - 1) * GAME_CONFIG.DIMENSIONS.SCALE_FACTOR;
         newEnemy.power = Math.floor(newEnemy.power * scaleFactor);
 
         set((s) => {
@@ -249,7 +260,7 @@ export const useGameStore = create<GameState>()(
             seeds: s.seeds + bonus,
             dimensionLevel: nextLevel,
             maxDimensionLevel: newMax,
-            currentEnemy: newEnemy
+            currentEnemy: newEnemy,
           };
         });
 
@@ -261,7 +272,7 @@ export const useGameStore = create<GameState>()(
           seeds: s.seeds + reward,
           isDimensionActive: false,
           dimensionLevel: 1,
-          currentEnemy: null
+          currentEnemy: null,
         }));
       },
 
@@ -320,10 +331,12 @@ export const useGameStore = create<GameState>()(
     {
       name: "rick-morty-idle-save",
       version: 4,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
+        let state = persistedState as PersistedGameState;
+
         if (version === 0) {
-          persistedState = {
-            ...persistedState,
+          state = {
+            ...state,
             inventory: [],
             activeSlots: [null, null, null, null],
             upgrades: { seeds: 0, power: 0 },
@@ -331,10 +344,12 @@ export const useGameStore = create<GameState>()(
         }
 
         if (version < 2) {
-          const migrateCard = (card: any) => {
+          const migrateCard = (card: GameCard): GameCard => {
             if (!card) return card;
             if (!card.origin || card.origin === "none") {
-              const charData = characters.find((c) => c.name === card.characterName);
+              const charData = (characters as Character[]).find(
+                (c) => c.name === card.characterName,
+              );
               return {
                 ...card,
                 origin: charData?.origin || "unknown",
@@ -344,56 +359,59 @@ export const useGameStore = create<GameState>()(
             return card;
           };
 
-          persistedState = {
-            ...persistedState,
-            inventory: persistedState.inventory?.map(migrateCard) || [],
-            activeSlots: persistedState.activeSlots?.map(migrateCard) || [
-              null,
-              null,
-              null,
-              null,
-            ],
+          state = {
+            ...state,
+            inventory: state.inventory?.map(migrateCard) || [],
+            activeSlots: state.activeSlots?.map((slot) =>
+              slot ? migrateCard(slot) : null,
+            ) || [null, null, null, null],
           };
         }
 
         if (version < 3) {
           // Fix duplicate IDs by regenerating them for all cards
-          const oldInv = persistedState.inventory || [];
-          const newInventory = oldInv.map((card: any) => {
+          const oldInv = state.inventory || [];
+          const newInventory = oldInv.map((card: GameCard) => {
             const uuid = crypto.randomUUID().slice(0, 8);
-            const baseId = card.id ? card.id.split('-').slice(0, 2).join('-') : 'unknown';
-            return { 
-              ...card, 
-              id: `${baseId}-${card.timestamp || Date.now()}-${uuid}` 
+            const baseId = card.id
+              ? card.id.split("-").slice(0, 2).join("-")
+              : "unknown";
+            return {
+              ...card,
+              id: `${baseId}-${card.timestamp || Date.now()}-${uuid}`,
             };
           });
-          
-          const newActiveSlots = (persistedState.activeSlots || [null, null, null, null]).map((slot: any) => {
+
+          const newActiveSlots = (
+            state.activeSlots || [null, null, null, null]
+          ).map((slot) => {
             if (!slot) return null;
-            const oldIndex = oldInv.findIndex((c: any) => c.id === slot.id);
+            const oldIndex = oldInv.findIndex(
+              (c: GameCard) => c.id === slot.id,
+            );
             if (oldIndex !== -1 && newInventory[oldIndex]) {
               return newInventory[oldIndex];
             }
             return null;
           });
 
-          persistedState = {
-            ...persistedState,
+          state = {
+            ...state,
             inventory: newInventory,
             activeSlots: newActiveSlots,
           };
         }
 
         if (version < 4) {
-          persistedState = {
-            ...persistedState,
+          state = {
+            ...state,
             currentEnemy: null,
           };
         }
 
-        return persistedState;
+        return state;
       },
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => (state: GameState | undefined) => {
         if (state && state.inventory.length === 0) {
           const starter = generateCard(
             { COMMON: 0.8, RARE: 0.2, HOLO: 0, FULL_ART: 0 },
