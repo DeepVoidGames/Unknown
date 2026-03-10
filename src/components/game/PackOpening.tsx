@@ -220,141 +220,143 @@ export function PackOpening({ packId }: PackOpeningProps) {
       </Button>
 
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-2xl p-6 overflow-hidden">
+        <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-2xl overflow-y-auto">
           {/* Background Portal FX */}
           <div
-            className={`absolute inset-0 opacity-20 pointer-events-none transition-all duration-1000 ${isOpening ? "scale-150" : "scale-100"}`}
+            className={`fixed inset-0 opacity-20 pointer-events-none transition-all duration-1000 ${isOpening ? "scale-150" : "scale-100"}`}
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary blur-[120px] animate-pulse" />
           </div>
 
-          <div className="relative w-full max-w-6xl flex flex-col items-center">
-            {isOpening ? (
-              <div
-                className="flex flex-col items-center gap-8 animate-in zoom-in duration-300"
-                style={{
-                  transform: `translate(${portalVibration}px, ${portalVibration}px)`,
-                }}
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 blur-3xl bg-primary/40 animate-pulse" />
-                  <div className="w-56 h-72 bg-gradient-to-b from-primary/20 to-primary/60 rounded-3xl border-4 border-primary shadow-[0_0_100px_rgba(var(--primary),0.6)] flex items-center justify-center relative overflow-hidden">
-                    <Package className="w-24 h-24 text-white animate-bounce drop-shadow-2xl" />
-                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,transparent,rgba(0,0,0,0.5))]" />
-                  </div>
-                </div>
-                <div className="text-center space-y-2">
-                  <h2 className="text-4xl font-display font-bold text-primary tracking-[0.2em] animate-pulse">
-                    STABILIZING RIFT
-                  </h2>
-                  <p className="text-muted-foreground font-body text-sm">
-                    Accessing Rick's Secret Stash...
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="w-full flex flex-col items-center gap-12 animate-in fade-in duration-1000">
-                <div className="text-center space-y-2">
-                  <h2 className="text-4xl font-display font-bold text-foreground">
-                    {showCards.length === pack.cardCount
-                      ? "ENTITY ACQUIRED"
-                      : "MANIFESTING..."}
-                  </h2>
-                  <p className="text-muted-foreground">
-                    Click to stabilize the interdimensional form
-                  </p>
-                  <div className="flex items-center justify-center gap-2 pt-2">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
-                      Inventory:
-                    </span>
-                    <span
-                      className={`text-[10px] font-bold ${inventory.length >= maxInventory ? "text-red-500" : "text-primary"}`}
-                    >
-                      {inventory.length} / {maxInventory}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap justify-center gap-8 md:gap-12">
-                  {revealedCards.map((card, i) => (
-                    <div key={i} className="flex flex-col items-center gap-4">
-                      {showCards.includes(i) ? (
-                        <div className="flex flex-col items-center gap-3 animate-in flip-in-y duration-700">
-                          <div
-                            className={
-                              soldCards.includes(card.id)
-                                ? "grayscale opacity-40 pointer-events-none"
-                                : ""
-                            }
-                          >
-                            <GameCard card={card} />
-                          </div>
-                          {!soldCards.includes(card.id) && (
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              className="w-full font-bold text-[10px] h-8 bg-red-950/40 hover:bg-red-900 border border-red-500/50"
-                              onClick={() => handleSellCard(card)}
-                            >
-                              SELL FOR{" "}
-                              {formatCurrency(
-                                Math.floor(
-                                  card.income *
-                                    GAME_CONFIG.SELL_PRICE_MULTIPLIER,
-                                ),
-                              )}
-                            </Button>
-                          )}
-                          {soldCards.includes(card.id) && (
-                            <div className="h-8 flex items-center justify-center">
-                              <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
-                                Sold
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => revealCard(i)}
-                          className="w-44 h-64 bg-gradient-to-br from-muted/80 to-muted-foreground/10 rounded-2xl border-2 border-border/50 flex flex-col items-center justify-center gap-4 hover:border-primary/50 transition-all hover:scale-105 group relative overflow-hidden shadow-2xl"
-                        >
-                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--primary),0.1),transparent)] group-hover:opacity-100 opacity-0 transition-opacity" />
-                          <div className="w-14 h-14 rounded-full bg-background/50 flex items-center justify-center group-hover:rotate-12 transition-transform shadow-inner">
-                            <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-primary" />
-                          </div>
-                          <span className="text-[10px] font-display font-bold text-muted-foreground tracking-[0.3em] uppercase group-hover:text-primary">
-                            DECRYPT
-                          </span>
-                        </button>
-                      )}
+          <div className="relative min-h-full flex items-center justify-center p-4 md:p-8">
+            <div className="relative w-full max-w-6xl flex flex-col items-center">
+              {isOpening ? (
+                <div
+                  className="flex flex-col items-center gap-8 animate-in zoom-in duration-300"
+                  style={{
+                    transform: `translate(${portalVibration}px, ${portalVibration}px)`,
+                  }}
+                >
+                  <div className="relative">
+                    <div className="absolute inset-0 blur-3xl bg-primary/40 animate-pulse" />
+                    <div className="w-56 h-72 bg-gradient-to-b from-primary/20 to-primary/60 rounded-3xl border-4 border-primary shadow-[0_0_100px_rgba(var(--primary),0.6)] flex items-center justify-center relative overflow-hidden">
+                      <Package className="w-24 h-24 text-white animate-bounce drop-shadow-2xl" />
+                      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,transparent,rgba(0,0,0,0.5))]" />
                     </div>
-                  ))}
-                </div>
-
-                {showCards.length === pack.cardCount && (
-                  <div className="flex flex-col md:flex-row items-center gap-4 animate-in slide-in-from-bottom-8">
-                    <Button
-                      onClick={closePortal}
-                      size="lg"
-                      variant="outline"
-                      className="font-display font-bold px-12 py-8 text-xl shadow-2xl"
-                    >
-                      RETURN TO CITADEL
-                    </Button>
-                    <Button
-                      onClick={handleBuyPack}
-                      size="lg"
-                      disabled={
-                        seeds < pack.cost || inventory.length >= maxInventory
-                      }
-                      className="font-display font-bold px-12 py-8 text-xl shadow-2xl"
-                    >
-                      OPEN AGAIN ({formatCurrency(pack.cost)})
-                    </Button>
                   </div>
-                )}
-              </div>
-            )}
+                  <div className="text-center space-y-2">
+                    <h2 className="text-4xl font-display font-bold text-primary tracking-[0.2em] animate-pulse">
+                      STABILIZING RIFT
+                    </h2>
+                    <p className="text-muted-foreground font-body text-sm">
+                      Accessing Rick's Secret Stash...
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full flex flex-col items-center gap-12 animate-in fade-in duration-1000 py-12">
+                  <div className="text-center space-y-2">
+                    <h2 className="text-4xl font-display font-bold text-foreground">
+                      {showCards.length === pack.cardCount
+                        ? "ENTITY ACQUIRED"
+                        : "MANIFESTING..."}
+                    </h2>
+                    <p className="text-muted-foreground">
+                      Click to stabilize the interdimensional form
+                    </p>
+                    <div className="flex items-center justify-center gap-2 pt-2">
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                        Inventory:
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold ${inventory.length >= maxInventory ? "text-red-500" : "text-primary"}`}
+                      >
+                        {inventory.length} / {maxInventory}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap justify-center gap-8 md:gap-12">
+                    {revealedCards.map((card, i) => (
+                      <div key={i} className="flex flex-col items-center gap-4">
+                        {showCards.includes(i) ? (
+                          <div className="flex flex-col items-center gap-3 animate-in flip-in-y duration-700">
+                            <div
+                              className={
+                                soldCards.includes(card.id)
+                                  ? "grayscale opacity-40 pointer-events-none"
+                                  : ""
+                              }
+                            >
+                              <GameCard card={card} />
+                            </div>
+                            {!soldCards.includes(card.id) && (
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="w-full font-bold text-[10px] h-8 bg-red-950/40 hover:bg-red-900 border border-red-500/50"
+                                onClick={() => handleSellCard(card)}
+                              >
+                                SELL FOR{" "}
+                                {formatCurrency(
+                                  Math.floor(
+                                    card.income *
+                                      GAME_CONFIG.SELL_PRICE_MULTIPLIER,
+                                  ),
+                                )}
+                              </Button>
+                            )}
+                            {soldCards.includes(card.id) && (
+                              <div className="h-8 flex items-center justify-center">
+                                <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
+                                  Sold
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => revealCard(i)}
+                            className="w-44 h-64 bg-gradient-to-br from-muted/80 to-muted-foreground/10 rounded-2xl border-2 border-border/50 flex flex-col items-center justify-center gap-4 hover:border-primary/50 transition-all hover:scale-105 group relative overflow-hidden shadow-2xl"
+                          >
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--primary),0.1),transparent)] group-hover:opacity-100 opacity-0 transition-opacity" />
+                            <div className="w-14 h-14 rounded-full bg-background/50 flex items-center justify-center group-hover:rotate-12 transition-transform shadow-inner">
+                              <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-primary" />
+                            </div>
+                            <span className="text-[10px] font-display font-bold text-muted-foreground tracking-[0.3em] uppercase group-hover:text-primary">
+                              DECRYPT
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {showCards.length === pack.cardCount && (
+                    <div className="flex flex-col md:flex-row items-center gap-4 animate-in slide-in-from-bottom-8">
+                      <Button
+                        onClick={closePortal}
+                        size="lg"
+                        variant="outline"
+                        className="font-display font-bold px-12 py-8 text-xl shadow-2xl"
+                      >
+                        RETURN TO CITADEL
+                      </Button>
+                      <Button
+                        onClick={handleBuyPack}
+                        size="lg"
+                        disabled={
+                          seeds < pack.cost || inventory.length >= maxInventory
+                        }
+                        className="font-display font-bold px-12 py-8 text-xl shadow-2xl"
+                      >
+                        OPEN AGAIN ({formatCurrency(pack.cost)})
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
