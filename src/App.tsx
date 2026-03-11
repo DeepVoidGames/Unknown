@@ -16,11 +16,27 @@ import { useGameStore } from "@/store/gameStore";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
 import { GAME_CONFIG, calculateCurrentIncome } from "@/config/gameConfig";
+import { initGA, trackPageView } from "@/lib/analytics";
+import { useLocation } from "react-router-dom";
 
 const queryClient = new QueryClient();
 
+const AnalyticsTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+
+  return null;
+};
+
 const App = () => {
   const offlineProcessed = useRef(false);
+
+  useEffect(() => {
+    initGA();
+  }, []);
 
   // Offline income calculation — runs once on mount
   useEffect(() => {
@@ -65,6 +81,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <AnalyticsTracker />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/collection" element={<Collection />} />
