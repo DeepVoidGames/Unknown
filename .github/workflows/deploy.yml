@@ -34,6 +34,8 @@ jobs:
         run: npm install
 
       - name: Build
+        env:
+          VITE_GA_ID: ${{ secrets.VITE_GA_ID }}
         run: npm run build
 
       - name: Setup Pages

@@ -10,6 +10,12 @@ import {
   Character,
   GameState as BaseGameState,
 } from "@/types/game";
+import {
+  trackPackOpening,
+  trackUpgrade,
+  trackDimensionStart,
+  trackDimensionEnd,
+} from "@/lib/analytics";
 
 interface GameState extends BaseGameState {
   addCard: (card: GameCard) => boolean;
@@ -191,6 +197,8 @@ export const useGameStore = create<GameState>()(
           seeds: state.seeds - pack.cost,
         }));
 
+        trackPackOpening(pack.name, pack.cost);
+
         return newCards;
       },
 
@@ -230,6 +238,7 @@ export const useGameStore = create<GameState>()(
           dimensionLevel: 1,
           currentEnemy: enemy,
         }));
+        trackDimensionStart(1);
         return true;
       },
 
@@ -268,6 +277,8 @@ export const useGameStore = create<GameState>()(
       },
 
       resetDimension: (reward) => {
+        const { dimensionLevel } = get();
+        trackDimensionEnd(dimensionLevel, reward);
         set((s) => ({
           seeds: s.seeds + reward,
           isDimensionActive: false,
@@ -296,13 +307,17 @@ export const useGameStore = create<GameState>()(
 
         if (seeds < cost) return false;
 
-        set((s) => ({
-          seeds: s.seeds - cost,
-          upgrades: {
-            ...s.upgrades,
-            [type]: s.upgrades[type] + 1,
-          },
-        }));
+        set((s) => {
+          const newLevel = s.upgrades[type] + 1;
+          trackUpgrade(type, newLevel, cost);
+          return {
+            seeds: s.seeds - cost,
+            upgrades: {
+              ...s.upgrades,
+              [type]: newLevel,
+            },
+          };
+        });
         return true;
       },
 
