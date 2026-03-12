@@ -48,6 +48,8 @@ export const generateCard = (
   };
 };
 
+const characterMap = new Map(characters.map((c) => [c.id, c]));
+
 export const resolveCardStats = (card: GameCard) => {
   if (!card) {
     const character = (characters as Character[])[0];
@@ -59,8 +61,9 @@ export const resolveCardStats = (card: GameCard) => {
   }
 
   const character =
-    (characters as Character[]).find((c) => c.id === card.characterId) ||
-    (characters as Character[])[0];
+    characterMap.get(card.characterId) ?? (characters as Character[])[0];
+  // (characters as Character[]).find((c) => c.id === card.characterId) ||
+  // (characters as Character[])[0];
 
   const types = card.types || [];
 
@@ -75,8 +78,7 @@ export const resolveCardStats = (card: GameCard) => {
 
   const baseIncome =
     card.income !== undefined ? card.income : character.baseMultiplier;
-  const basePower =
-    card.power !== undefined ? card.power : character.basePower;
+  const basePower = card.power !== undefined ? card.power : character.basePower;
 
   return {
     income: Math.floor(baseIncome * combinedMultiplier),
