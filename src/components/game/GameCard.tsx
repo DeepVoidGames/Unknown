@@ -49,6 +49,7 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
   const isHolo = types.includes("HOLO");
   const isFullArt = types.includes("FULL_ART");
   const isGold = types.includes("GOLD");
+  const isSilver = types.includes("SILVER");
   const isRevert = types.includes("REVERT");
 
   const primaryType = types.includes("REVERT")
