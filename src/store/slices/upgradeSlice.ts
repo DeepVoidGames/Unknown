@@ -7,9 +7,10 @@ export interface UpgradeSlice {
   upgrades: {
     seeds: number;
     power: number;
+    inventory: number;
   };
-  buyUpgrade: (type: "seeds" | "power") => boolean;
-  getUpgradeCost: (type: "seeds" | "power") => number;
+  buyUpgrade: (type: "seeds" | "power" | "inventory") => boolean;
+  getUpgradeCost: (type: "seeds" | "power" | "inventory") => number;
 }
 
 export const createUpgradeSlice: StateCreator<
@@ -21,6 +22,7 @@ export const createUpgradeSlice: StateCreator<
   upgrades: {
     seeds: 0,
     power: 0,
+    inventory: 0,
   },
 
   getUpgradeCost: (type) => {
@@ -46,13 +48,22 @@ export const createUpgradeSlice: StateCreator<
     set((s) => {
       const newLevel = s.upgrades[type] + 1;
       trackUpgrade(type, newLevel, cost);
-      return {
+      
+      const newState: Partial<GameStore> = {
         seeds: s.seeds - cost,
         upgrades: {
           ...s.upgrades,
           [type]: newLevel,
         },
       };
+
+      if (type === "inventory") {
+        newState.maxInventory =
+          GAME_CONFIG.INITIAL_MAX_INVENTORY +
+          newLevel * GAME_CONFIG.UPGRADES.inventory.BONUS_PER_LEVEL;
+      }
+
+      return newState;
     });
     return true;
   },

@@ -9,6 +9,7 @@ import {
   Sword,
   ChevronUp,
   Leaf,
+  Layers,
 } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
 import { toast } from "sonner";
@@ -18,7 +19,7 @@ import { GAME_CONFIG } from "@/config/gameConfig";
 const Upgrades = () => {
   const { seeds, upgrades, buyUpgrade, getUpgradeCost } = useGameStore();
 
-  const handleBuy = (type: "seeds" | "power") => {
+  const handleBuy = (type: "seeds" | "power" | "inventory") => {
     const cost = getUpgradeCost(type);
     if (seeds < cost) {
       toast.error("Not enough Mega Seeds!", {
@@ -29,15 +30,33 @@ const Upgrades = () => {
 
     if (buyUpgrade(type)) {
       toast.success(`Upgrade Purchased!`, {
-        description: `${type === "seeds" ? "Seed Production" : "Combat Power"} increased.`,
+        description: `${
+          type === "seeds"
+            ? "Seed Production"
+            : type === "power"
+              ? "Combat Power"
+              : "Inventory Capacity"
+        } increased.`,
       });
     }
   };
 
-  const getEffect = (type: "seeds" | "power") => {
+  const getEffect = (type: "seeds" | "power" | "inventory") => {
     const level = upgrades[type];
     const bonus = GAME_CONFIG.UPGRADES[type].BONUS_PER_LEVEL;
+    if (type === "inventory") {
+      return `+${level * bonus} slots`;
+    }
     return `+${(level * bonus * 100).toFixed(0)}%`;
+  };
+
+  const getNextEffect = (type: "seeds" | "power" | "inventory") => {
+    const level = upgrades[type];
+    const bonus = GAME_CONFIG.UPGRADES[type].BONUS_PER_LEVEL;
+    if (type === "inventory") {
+      return `+${(level + 1) * bonus} slots`;
+    }
+    return `+${((level + 1) * bonus * 100).toFixed(0)}%`;
   };
 
   const upgradesList = [
@@ -57,6 +76,15 @@ const Upgrades = () => {
       icon: Sword,
       color: "text-red-500",
       bgColor: "bg-red-500/10",
+    },
+    {
+      id: "inventory",
+      name: "Interdimensional Storage",
+      description:
+        "Stabilizes localized storage space to hold more character cards.",
+      icon: Layers,
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
     },
   ];
 
@@ -98,7 +126,7 @@ const Upgrades = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
             {upgradesList.map((upg) => {
-              const type = upg.id as "seeds" | "power";
+              const type = upg.id as "seeds" | "power" | "inventory";
               const cost = getUpgradeCost(type);
               const level = upgrades[type];
 
@@ -146,7 +174,7 @@ const Upgrades = () => {
                         </p>
                         <div className="flex items-center gap-1">
                           <p className="text-lg font-bold text-foreground">
-                            + {((level + 1) * GAME_CONFIG.UPGRADES[type].BONUS_PER_LEVEL * 100).toFixed(0)}%
+                            {getNextEffect(type)}
                           </p>
                           <ChevronUp className="w-4 h-4 text-green-500" />
                         </div>

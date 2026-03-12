@@ -21,6 +21,13 @@ export const GAME_CONFIG = {
       JUMP_THRESHOLD: 10,
       JUMP_MULTIPLIER: 5,
       BONUS_PER_LEVEL: 0.05, // 5% per level
+    },
+    inventory: {
+      BASE_COST: 1500,
+      COST_EXPONENT: 1.8,
+      JUMP_THRESHOLD: 5,
+      JUMP_MULTIPLIER: 4,
+      BONUS_PER_LEVEL: 10, // 10 slots per level
     }
   },
 

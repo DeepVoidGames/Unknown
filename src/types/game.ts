@@ -42,6 +42,7 @@ export interface GameState {
   upgrades: {
     seeds: number;
     power: number;
+    inventory: number;
   };
   lastSaved: number;
 }
