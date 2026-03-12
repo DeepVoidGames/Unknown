@@ -8,7 +8,7 @@ export function PortalArea() {
   const toggleSlot = useGameStore((s) => s.toggleSlot);
 
   const activeCount = activeSlots.filter(Boolean).length;
-  const inactiveCards = Math.max(0, Math.floor((inventory.length - activeCount) / 2));
+  const inactiveCards = Math.max(0, (inventory.length - activeCount));
 
   return (
     <section className="py-8 px-4">
@@ -18,8 +18,10 @@ export function PortalArea() {
         </h2>
         <p className="text-sm text-muted-foreground font-body">
           Place cards to generate Mega Seeds • Collection bonus:{" "}
-          <span className="text-primary font-bold">+{inactiveCards}%</span> (
-          {inactiveCards} cards in inventory)
+          <span className="text-primary font-bold">
+            +{Math.max(0, Math.floor((inventory.length - activeCount) / 2))}%
+          </span>{" "}
+          ({inactiveCards} cards in inventory)
         </p>
       </div>
 
