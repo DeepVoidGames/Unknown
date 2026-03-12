@@ -4,9 +4,9 @@ export const GAME_CONFIG = {
   INITIAL_SEEDS: 100,
   INITIAL_MAX_INVENTORY: 50,
   DIMENSION_ENTRY_COST: 1000,
-  SELL_PRICE_MULTIPLIER: 100,
+  SELL_PRICE_MULTIPLIER: 0.8,
   MAX_OFFLINE_SECONDS: 24 * 60 * 60, // 24h
-  
+
   UPGRADES: {
     seeds: {
       BASE_COST: 500,
@@ -21,11 +21,18 @@ export const GAME_CONFIG = {
       JUMP_THRESHOLD: 10,
       JUMP_MULTIPLIER: 5,
       BONUS_PER_LEVEL: 0.05, // 5% per level
-    }
+    },
+    inventory: {
+      BASE_COST: 1500,
+      COST_EXPONENT: 1.8,
+      JUMP_THRESHOLD: 10,
+      JUMP_MULTIPLIER: 4,
+      BONUS_PER_LEVEL: 4, // 10 slots per level
+    },
   },
 
   INCOME: {
-    INACTIVE_CARD_BONUS: 0.01, // 1% per inactive card
+    INACTIVE_CARD_BONUS: 0.005, // 1% per inactive card
   },
 
   CARD_GENERATION: {
@@ -41,7 +48,7 @@ export const GAME_CONFIG = {
       RARE: 0.3,
       HOLO: 0.08,
       FULL_ART: 0.02,
-    }
+    },
   },
 
   DIMENSIONS: {
@@ -58,33 +65,11 @@ export const GAME_CONFIG = {
       100: "Void Breach",
     } as Record<number, string>,
     PACK_UNLOCKS: {
-      "standard": 0,
-      "mega": 10,
+      standard: 0,
+      mega: 10,
       "silver-rift": 25,
       "alchemists-portal": 50,
       "void-breach": 100,
-    } as Record<string, number>
-  }
-};
-
-/**
- * Calculates the current income per second based on the game state.
- * @param state The current game state
- * @returns Income per second
- */
-export const calculateCurrentIncome = (state: Pick<GameState, "activeSlots" | "inventory" | "upgrades">) => {
-  const activeIncome = state.activeSlots.reduce(
-    (sum: number, slot: GameCard | null) => sum + (slot?.income ?? 0),
-    0,
-  );
-  
-  const inactiveCards = state.inventory.filter(
-    (c: GameCard) => !state.activeSlots.some((s: GameCard | null) => s?.id === c.id),
-  ).length;
-  
-  const bonus = 1 + inactiveCards * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS;
-  
-  const upgradeBonus = 1 + state.upgrades.seeds * GAME_CONFIG.UPGRADES.seeds.BONUS_PER_LEVEL;
-
-  return activeIncome * bonus * upgradeBonus;
+    } as Record<string, number>,
+  },
 };

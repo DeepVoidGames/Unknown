@@ -4,7 +4,7 @@ import { Footer } from "@/components/game/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Map, ArrowLeft, Sword, History, Zap, Beaker } from "lucide-react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore, resolveCardStats } from "@/store/gameStore";
 import { GameCard as GameCardType } from "@/types/game";
 import { GameCard } from "@/components/game/GameCard";
 import { toast } from "sonner";
@@ -23,7 +23,6 @@ const Dimension = () => {
     startDimension,
     nextDimensionLevel,
     resetDimension,
-    generateRandomCard,
   } = useGameStore();
 
   const [isFighting, setIsFighting] = useState(false);
@@ -31,15 +30,25 @@ const Dimension = () => {
   // Find player's strongest card and calculate base vs bonus
   const playerStats = useMemo(() => {
     if (inventory.length === 0) return null;
-    const strongest = [...inventory].sort((a, b) => b.power - a.power)[0];
+    
+    // Process inventory to resolve stats first
+    const resolvedInventory = inventory
+      .filter(Boolean)
+      .map(card => ({
+        card,
+        stats: resolveCardStats(card)
+      }))
+      .sort((a, b) => b.stats.power - a.stats.power);
+      
+    const strongest = resolvedInventory[0];
 
     // Lab Power Upgrade
     const powerMultiplier = 1 + upgrades.power * GAME_CONFIG.UPGRADES.power.BONUS_PER_LEVEL;
-    const totalPower = Math.floor(strongest.power * powerMultiplier);
+    const totalPower = Math.floor(strongest.stats.power * powerMultiplier);
 
     return {
-      card: strongest,
-      basePower: strongest.power,
+      card: strongest.card,
+      basePower: strongest.stats.power,
       totalPower,
       bonusPercent: Math.round(upgrades.power * GAME_CONFIG.UPGRADES.power.BONUS_PER_LEVEL * 100),
     };
@@ -59,6 +68,8 @@ const Dimension = () => {
 
   const handleFight = () => {
     if (!playerStats || !currentEnemy) return;
+    
+    const enemyStats = resolveCardStats(currentEnemy);
 
     setIsFighting(true);
 
@@ -68,7 +79,7 @@ const Dimension = () => {
           description: `You've reached the maximum level and unlocked all rewards!`,
         });
         resetDimension(GAME_CONFIG.DIMENSIONS.MAX_LEVEL_REWARD);
-      } else if (playerStats.totalPower >= currentEnemy.power) {
+      } else if (playerStats.totalPower >= enemyStats.power) {
         const { bonus, milestoneUnlocked } = nextDimensionLevel();
 
         if (milestoneUnlocked) {
@@ -93,6 +104,11 @@ const Dimension = () => {
       setIsFighting(false);
     }, 1500);
   };
+
+  const enemyPower = useMemo(() => {
+    if (!currentEnemy) return 0;
+    return resolveCardStats(currentEnemy).power;
+  }, [currentEnemy]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -242,7 +258,7 @@ const Dimension = () => {
                   </div>
                   <div className="flex items-center gap-2 text-3xl font-bold text-red-500">
                     <Sword className="w-7 h-7" />
-                    {formatNumber(currentEnemy?.power || 0)}
+                    {formatNumber(enemyPower)}
                   </div>
                 </div>
               </div>

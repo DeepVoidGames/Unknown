@@ -1,9 +1,9 @@
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore, calculateCurrentIncome } from '@/store/gameStore';
 import { Leaf, TrendingUp, Settings, Beaker, Library } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { formatNumber, formatCurrency } from '@/lib/utils';
-import { GAME_CONFIG, calculateCurrentIncome } from '@/config/gameConfig';
+import { GAME_CONFIG } from '@/config/gameConfig';
 
 export function Header() {
   const seeds = useGameStore((s) => s.seeds);
@@ -11,9 +11,8 @@ export function Header() {
   const inventory = useGameStore((s) => s.inventory);
   const upgrades = useGameStore((s) => s.upgrades);
 
-  const inactiveCards = inventory.filter(
-    (c) => !activeSlots.some((s) => s?.id === c.id)
-  ).length;
+  const activeCount = activeSlots.filter(Boolean).length;
+  const inactiveCards = Math.max(0, inventory.length - activeCount);
   
   const collectionBonus = Math.round(inactiveCards * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS * 100);
   const labBonus = Math.round((upgrades.seeds || 0) * GAME_CONFIG.UPGRADES.seeds.BONUS_PER_LEVEL * 100);

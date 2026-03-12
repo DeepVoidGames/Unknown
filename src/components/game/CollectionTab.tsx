@@ -1,4 +1,4 @@
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore, resolveCardStats } from '@/store/gameStore';
 import { GameCard } from './GameCard';
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
@@ -26,11 +26,12 @@ export function CollectionTab() {
 
   const displayCards = useMemo(() => {
     return inventory
-      .filter(card => 
-        card.name.toLowerCase().includes(search.toLowerCase()) || 
-        card.characterName.toLowerCase().includes(search.toLowerCase())
+      .filter(Boolean)
+      .map((card) => ({ card, stats: resolveCardStats(card) }))
+      .filter(({ stats }) =>
+        stats.character.name.toLowerCase().includes(search.toLowerCase()),
       )
-      .sort((a, b) => b.income - a.income)
+      .sort((a, b) => b.stats.income - a.stats.income)
       .slice(0, 4);
   }, [inventory, search]);
 
@@ -62,7 +63,7 @@ export function CollectionTab() {
         
         {displayCards.length > 0 ? (
           <div className="flex justify-center gap-6 flex-wrap">
-            {displayCards.map((card) => {
+            {displayCards.map(({ card }) => {
               const isInSlot = activeSlots.some((s) => s?.id === card.id);
               return (
                 <div key={card.id} className="animate-in fade-in slide-in-from-bottom-2 duration-300">

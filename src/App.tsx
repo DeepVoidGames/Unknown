@@ -12,10 +12,10 @@ import Upgrades from "./pages/Upgrades";
 import NotFound from "./pages/NotFound";
 
 import { useEffect, useRef } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore, calculateCurrentIncome } from "@/store/gameStore";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
-import { GAME_CONFIG, calculateCurrentIncome } from "@/config/gameConfig";
+import { GAME_CONFIG } from "@/config/gameConfig";
 import { initGA, trackPageView } from "@/lib/analytics";
 import { useLocation } from "react-router-dom";
 

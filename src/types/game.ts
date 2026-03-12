@@ -23,18 +23,11 @@ export interface Character {
 
 export interface GameCard {
   id: string;
-  name: string;
-  characterName: string;
+  characterId: number;
   types: string[]; // e.g. ["HOLO", "FULL_ART"]
-  income: number;
-  power: number;
-  avatarId?: number;
-  customImage?: string;
-  origin: string;
-  location: string;
-  status: string;
-  species: string;
   timestamp: number;
+  income?: number; // Optional: used for enemies or special overrides
+  power?: number;  // Optional: used for enemies or special overrides
 }
 
 export interface GameState {
@@ -49,6 +42,7 @@ export interface GameState {
   upgrades: {
     seeds: number;
     power: number;
+    inventory: number;
   };
   lastSaved: number;
 }

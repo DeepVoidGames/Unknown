@@ -8,9 +8,11 @@ import {
   Trophy,
   RefreshCw,
   Sword,
+  Leaf,
+  LucideIcon,
 } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
-import cardTypes from "@/data/cardTypes.json";
+import { resolveCardStats } from "@/store/gameStore";
 
 interface GameCardProps {
   card: GameCardType;
@@ -18,7 +20,18 @@ interface GameCardProps {
   isActive?: boolean;
 }
 
-const typeIcons: Record<string, any> = {
+type RarityOrType =
+  | "COMMON"
+  | "NORMAL"
+  | "RARE"
+  | "HOLO"
+  | "FULL_ART"
+  | "SILVER"
+  | "GOLD"
+  | "REVERT"
+  | "SWORD";
+
+const typeIcons = {
   COMMON: Circle,
   NORMAL: Circle,
   RARE: Star,
@@ -28,9 +41,9 @@ const typeIcons: Record<string, any> = {
   GOLD: Trophy,
   REVERT: RefreshCw,
   SWORD: Sword,
-};
+} satisfies Record<RarityOrType, LucideIcon>;
 
-const rarityConfig: Record<string, any> = {
+const rarityConfig = {
   COMMON: { border: "border-border", bg: "bg-card" },
   NORMAL: { border: "border-border", bg: "bg-card" },
   RARE: { border: "border-blue-400/60 animate-rare-pulse", bg: "bg-card" },
@@ -39,15 +52,17 @@ const rarityConfig: Record<string, any> = {
   SILVER: { border: "border-slate-300", bg: "bg-slate-900/40" },
   GOLD: { border: "border-yellow-500", bg: "bg-yellow-900/20" },
   REVERT: { border: "border-red-500", bg: "bg-black" },
-};
+} satisfies Record<string, { border: string; bg: string }>;
 
 export function GameCard({ card, onClick, isActive }: GameCardProps) {
+  const stats = resolveCardStats(card);
+  const { character, income, power } = stats;
+
   const types = card.types || [];
   const isHolo = types.includes("HOLO");
   const isFullArt = types.includes("FULL_ART");
-  const isRare = types.includes("RARE");
-  const isSilver = types.includes("SILVER");
   const isGold = types.includes("GOLD");
+  const isSilver = types.includes("SILVER");
   const isRevert = types.includes("REVERT");
 
   const primaryType = types.includes("REVERT")
@@ -68,12 +83,10 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
 
   const config = rarityConfig[primaryType] || rarityConfig.COMMON;
 
-  let imgSrc = "https://rickandmortyapi.com/api/character/avatar/19.jpeg";
+  let imgSrc = `https://rickandmortyapi.com/api/character/avatar/${character.avatarId}.jpeg`;
 
-  if (card.customImage) {
-    imgSrc = card.customImage;
-  } else if (card.avatarId) {
-    imgSrc = `https://rickandmortyapi.com/api/character/avatar/${card.avatarId}.jpeg`;
+  if (character.customImage) {
+    imgSrc = character.customImage;
   }
 
   const imageFilter = isRevert
@@ -106,7 +119,7 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
         {isFullArt ? (
           <img
             src={imgSrc}
-            alt={card.characterName}
+            alt={character.name}
             className="w-full h-full object-cover transition-all duration-500"
             style={{ filter: imageFilter }}
           />
@@ -114,7 +127,7 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
           <div className="flex items-center justify-center h-full bg-muted/50">
             <img
               src={imgSrc}
-              alt={card.characterName}
+              alt={character.name}
               className="w-24 h-24 rounded-full object-cover border-2 border-border group-hover:scale-110 transition-all duration-500"
               style={{ filter: imageFilter }}
             />
@@ -124,14 +137,14 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
         <div className="absolute top-2 right-2 z-20">
           <span
             className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
-              card.status === "Alive"
+              character.status === "Alive"
                 ? "bg-green-500/20 text-green-400 border border-green-500/40"
-                : card.status === "Dead"
+                : character.status === "Dead"
                   ? "bg-red-500/20 text-red-400 border border-red-500/40"
                   : "bg-gray-500/20 text-gray-400 border border-gray-500/40"
             }`}
           >
-            {card.status}
+            {character.status}
           </span>
         </div>
       </div>
@@ -140,10 +153,10 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
         className={`p-3 space-y-1 ${isFullArt ? "bg-background/80 backdrop-blur-sm" : ""}`}
       >
         <p className="font-display text-[10px] font-bold text-foreground truncate leading-tight">
-          {card.characterName}
+          {character.name}
         </p>
         <p className="text-[8px] text-muted-foreground uppercase tracking-widest">
-          <span>{card.origin}</span>
+          <span>{character.origin}</span>
         </p>
         <div className="flex items-center justify-between">
           <div className="flex items-center -space-x-1">
@@ -156,19 +169,24 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
             })}
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-xs font-bold text-primary">
-              +{formatNumber(card.income)}/s
-            </span>
+            <div className="flex items-center gap-1">
+              <Leaf className="w-2.5 h-2.5 text-green-500 fill-green-500/20" />
+              <span className="text-xs font-bold text-primary">
+                {formatNumber(income)}/s
+              </span>
+            </div>
             <div className="flex items-center gap-1">
               <Sword className="w-2.5 h-2.5 text-red-500 fill-red-500/20" />
               <span className="text-[10px] font-bold text-red-500">
-                {formatNumber(card.power)}
+                {formatNumber(power)}
               </span>
             </div>
           </div>
         </div>
         <div className="pt-1 border-t border-border/50 flex items-center justify-between opacity-60">
-          <span className="text-[8px] font-body uppercase">{card.species}</span>
+          <span className="text-[8px] font-body uppercase">
+            {character.species}
+          </span>
         </div>
       </div>
     </button>
