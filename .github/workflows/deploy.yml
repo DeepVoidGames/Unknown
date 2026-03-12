@@ -32,7 +32,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
+      - name: Prebuild
+        run: npm run prebuild
       - name: Build
         env:
           VITE_GA_ID: ${{ secrets.VITE_GA_ID }}
