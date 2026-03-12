@@ -8,6 +8,8 @@ import {
   Trophy,
   RefreshCw,
   Sword,
+  Leaf,
+  LucideIcon,
 } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
 import { resolveCardStats } from "@/store/gameStore";
@@ -18,7 +20,18 @@ interface GameCardProps {
   isActive?: boolean;
 }
 
-const typeIcons: Record<string, any> = {
+type RarityOrType =
+  | "COMMON"
+  | "NORMAL"
+  | "RARE"
+  | "HOLO"
+  | "FULL_ART"
+  | "SILVER"
+  | "GOLD"
+  | "REVERT"
+  | "SWORD";
+
+const typeIcons = {
   COMMON: Circle,
   NORMAL: Circle,
   RARE: Star,
@@ -28,9 +41,9 @@ const typeIcons: Record<string, any> = {
   GOLD: Trophy,
   REVERT: RefreshCw,
   SWORD: Sword,
-};
+} satisfies Record<RarityOrType, LucideIcon>;
 
-const rarityConfig: Record<string, any> = {
+const rarityConfig = {
   COMMON: { border: "border-border", bg: "bg-card" },
   NORMAL: { border: "border-border", bg: "bg-card" },
   RARE: { border: "border-blue-400/60 animate-rare-pulse", bg: "bg-card" },
@@ -39,7 +52,7 @@ const rarityConfig: Record<string, any> = {
   SILVER: { border: "border-slate-300", bg: "bg-slate-900/40" },
   GOLD: { border: "border-yellow-500", bg: "bg-yellow-900/20" },
   REVERT: { border: "border-red-500", bg: "bg-black" },
-};
+} satisfies Record<string, { border: string; bg: string }>;
 
 export function GameCard({ card, onClick, isActive }: GameCardProps) {
   const stats = resolveCardStats(card);
@@ -156,9 +169,12 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
             })}
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-xs font-bold text-primary">
-              +{formatNumber(income)}/s
-            </span>
+            <div className="flex items-center gap-1">
+              <Leaf className="w-2.5 h-2.5 text-green-500 fill-green-500/20" />
+              <span className="text-xs font-bold text-primary">
+                {formatNumber(income)}/s
+              </span>
+            </div>
             <div className="flex items-center gap-1">
               <Sword className="w-2.5 h-2.5 text-red-500 fill-red-500/20" />
               <span className="text-[10px] font-bold text-red-500">

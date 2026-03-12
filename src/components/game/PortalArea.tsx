@@ -7,9 +7,8 @@ export function PortalArea() {
   const inventory = useGameStore((s) => s.inventory);
   const toggleSlot = useGameStore((s) => s.toggleSlot);
 
-  const inactiveCards = inventory.filter(
-    (c) => !activeSlots.some((s) => s?.id === c.id),
-  ).length;
+  const activeCount = activeSlots.filter(Boolean).length;
+  const inactiveCards = Math.max(0, Math.floor((inventory.length - activeCount) / 2));
 
   return (
     <section className="py-8 px-4">

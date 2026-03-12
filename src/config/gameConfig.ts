@@ -6,7 +6,7 @@ export const GAME_CONFIG = {
   DIMENSION_ENTRY_COST: 1000,
   SELL_PRICE_MULTIPLIER: 100,
   MAX_OFFLINE_SECONDS: 24 * 60 * 60, // 24h
-  
+
   UPGRADES: {
     seeds: {
       BASE_COST: 500,
@@ -25,14 +25,14 @@ export const GAME_CONFIG = {
     inventory: {
       BASE_COST: 1500,
       COST_EXPONENT: 1.8,
-      JUMP_THRESHOLD: 5,
+      JUMP_THRESHOLD: 10,
       JUMP_MULTIPLIER: 4,
-      BONUS_PER_LEVEL: 10, // 10 slots per level
-    }
+      BONUS_PER_LEVEL: 4, // 10 slots per level
+    },
   },
 
   INCOME: {
-    INACTIVE_CARD_BONUS: 0.01, // 1% per inactive card
+    INACTIVE_CARD_BONUS: 0.005, // 1% per inactive card
   },
 
   CARD_GENERATION: {
@@ -48,7 +48,7 @@ export const GAME_CONFIG = {
       RARE: 0.3,
       HOLO: 0.08,
       FULL_ART: 0.02,
-    }
+    },
   },
 
   DIMENSIONS: {
@@ -65,12 +65,11 @@ export const GAME_CONFIG = {
       100: "Void Breach",
     } as Record<number, string>,
     PACK_UNLOCKS: {
-      "standard": 0,
-      "mega": 10,
+      standard: 0,
+      mega: 10,
       "silver-rift": 25,
       "alchemists-portal": 50,
       "void-breach": 100,
-    } as Record<string, number>
-  }
+    } as Record<string, number>,
+  },
 };
-

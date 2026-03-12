@@ -11,9 +11,8 @@ export function Header() {
   const inventory = useGameStore((s) => s.inventory);
   const upgrades = useGameStore((s) => s.upgrades);
 
-  const inactiveCards = inventory.filter(
-    (c) => !activeSlots.some((s) => s?.id === c.id)
-  ).length;
+  const activeCount = activeSlots.filter(Boolean).length;
+  const inactiveCards = Math.max(0, inventory.length - activeCount);
   
   const collectionBonus = Math.round(inactiveCards * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS * 100);
   const labBonus = Math.round((upgrades.seeds || 0) * GAME_CONFIG.UPGRADES.seeds.BONUS_PER_LEVEL * 100);

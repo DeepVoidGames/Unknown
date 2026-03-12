@@ -101,15 +101,14 @@ export const calculateCurrentIncome = (
     0,
   );
 
-  const inactiveCards = state.inventory.filter(
-    (c: GameCard) =>
-      !state.activeSlots.some((s: GameCard | null) => s?.id === c.id),
-  ).length;
+  // Optimized: Instead of filtering, use simple subtraction ($O(1)$ -> $O(N)$)
+  const activeCount = state.activeSlots.filter(Boolean).length;
+  const inactiveCards = Math.max(0, state.inventory.length - activeCount);
 
   const bonus = 1 + inactiveCards * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS;
 
   const upgradeBonus =
     1 + state.upgrades.seeds * GAME_CONFIG.UPGRADES.seeds.BONUS_PER_LEVEL;
 
-  return activeIncome * bonus * upgradeBonus;
+  return Math.floor(activeIncome * bonus * upgradeBonus);
 };
