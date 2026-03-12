@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useGameStore } from "@/store/gameStore";
+import { useGameStore, resolveCardStats } from "@/store/gameStore";
 import { GameCard } from "./GameCard";
 import { Button } from "@/components/ui/button";
 import { Package, Sparkles, X, ChevronRight, Lock } from "lucide-react";
@@ -102,12 +102,13 @@ export function PackOpening({ packId }: PackOpeningProps) {
   };
 
   const handleSellCard = (card: GameCardType) => {
+    const stats = resolveCardStats(card);
     sellCard(card.id, card);
     setSoldCards((prev) => [...prev, card.id]);
     const sellPrice = Math.floor(
-      card.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER,
+      stats.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER,
     );
-    toast.success(`${card.characterName} sold!`, {
+    toast.success(`${stats.character.name} sold!`, {
       description: `Gained ${formatCurrency(sellPrice)} Mega Seeds.`,
     });
   };
@@ -300,7 +301,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
                                 SELL FOR{" "}
                                 {formatCurrency(
                                   Math.floor(
-                                    card.income *
+                                    resolveCardStats(card).income *
                                       GAME_CONFIG.SELL_PRICE_MULTIPLIER,
                                   ),
                                 )}

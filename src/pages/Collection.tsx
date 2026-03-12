@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore, resolveCardStats } from '@/store/gameStore';
 import { Header } from '@/components/game/Header';
 import { GameCard } from '@/components/game/GameCard';
 import { Footer } from '@/components/game/Footer';
@@ -32,16 +32,16 @@ const Collection = () => {
 
   const filteredCards = useMemo(() => {
     return inventory
-      .filter((card) => {
-        const matchesSearch = card.name.toLowerCase().includes(search.toLowerCase()) || 
-                             card.characterName.toLowerCase().includes(search.toLowerCase());
+      .map(card => ({ card, stats: resolveCardStats(card) }))
+      .filter(({ card, stats }) => {
+        const matchesSearch = stats.character.name.toLowerCase().includes(search.toLowerCase());
         const matchesType = typeFilter === 'ALL' || (card.types || []).includes(typeFilter);
         return matchesSearch && matchesType;
       })
       .sort((a, b) => {
-        if (sortBy === 'newest') return b.timestamp - a.timestamp;
-        if (sortBy === 'oldest') return a.timestamp - b.timestamp;
-        if (sortBy === 'income') return b.income - a.income;
+        if (sortBy === 'newest') return b.card.timestamp - a.card.timestamp;
+        if (sortBy === 'oldest') return a.card.timestamp - b.card.timestamp;
+        if (sortBy === 'income') return b.stats.income - a.stats.income;
         return 0;
       });
   }, [inventory, search, typeFilter, sortBy]);
@@ -57,17 +57,29 @@ const Collection = () => {
     
     const totalProfit = inventory
       .filter(c => selectedIds.includes(c.id))
-      .reduce((acc, c) => acc + (c.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER), 0);
+      .reduce((acc, c) => {
+        const stats = resolveCardStats(c);
+        return acc + (stats.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER);
+      }, 0);
 
-    if (confirm(`Sell ${selectedIds.length} selected cards for ${totalProfit.toLocaleString()} Mega Seeds?`)) {
+    if (confirm(`Sell ${selectedIds.length} selected cards for ${Math.floor(totalProfit).toLocaleString()} Mega Seeds?`)) {
       sellCards(selectedIds);
       toast.success(`Sold ${selectedIds.length} cards`, {
-        description: `You received ${totalProfit.toLocaleString()} Mega Seeds.`,
+        description: `You received ${Math.floor(totalProfit).toLocaleString()} Mega Seeds.`,
       });
       setSelectedIds([]);
       setIsSellMode(false);
     }
   };
+
+  const selectedTotalProfit = useMemo(() => {
+    return inventory
+      .filter(c => selectedIds.includes(c.id))
+      .reduce((acc, c) => {
+        const stats = resolveCardStats(c);
+        return acc + (stats.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER);
+      }, 0);
+  }, [inventory, selectedIds]);
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -143,7 +155,7 @@ const Collection = () => {
         {/* Results */}
         {filteredCards.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 justify-items-center">
-            {filteredCards.map((card) => {
+            {filteredCards.map(({ card }) => {
               const isSelected = selectedIds.includes(card.id);
               return (
                 <div 
@@ -190,7 +202,7 @@ const Collection = () => {
             <div className="text-destructive-foreground">
               <p className="font-display font-bold text-lg">{selectedIds.length} Selected</p>
               <p className="text-xs opacity-80">
-                Total: {inventory.filter(c => selectedIds.includes(c.id)).reduce((acc, c) => acc + (c.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER), 0).toLocaleString()} Seeds
+                Total: {Math.floor(selectedTotalProfit).toLocaleString()} Seeds
               </p>
             </div>
             <div className="flex gap-2">

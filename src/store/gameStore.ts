@@ -75,30 +75,38 @@ const generateCard = (
     }
   }
 
-  const combinedMultiplier = selectedTypes.reduce((acc, typeId) => {
-    const type = (cardTypes as CardType[]).find((t) => t.id === typeId);
-    return acc * (type?.multiplier || 1);
-  }, 1);
-
-  const finalIncome = Math.floor(character.baseMultiplier * combinedMultiplier);
-  const finalPower = Math.floor(character.basePower * combinedMultiplier);
   const timestamp = Date.now();
   const uuid = crypto.randomUUID();
 
   return {
     id: `${character.name.replace(/\s+/g, "-").toLowerCase()}-${selectedTypes.join("-")}-${timestamp}-${uuid.slice(0, 8)}`,
-    name: character.name,
-    characterName: character.name,
+    characterId: character.id,
     types: selectedTypes,
-    income: finalIncome,
-    power: finalPower,
-    avatarId: character.avatarId,
-    customImage: character.customImage,
-    origin: character.origin,
-    location: character.location,
-    status: character.status,
-    species: character.species,
     timestamp,
+  };
+};
+
+export const resolveCardStats = (card: GameCard) => {
+  const character =
+    (characters as Character[]).find((c) => c.id === card.characterId) ||
+    (characters as Character[])[0];
+
+  if (card.income !== undefined && card.power !== undefined) {
+    return { income: card.income, power: card.power, character };
+  }
+
+  const combinedMultiplier = card.types.reduce((acc, typeId) => {
+    const type = (cardTypes as CardType[]).find((t) => t.id === typeId);
+    return acc * (type?.multiplier || 1);
+  }, 1);
+
+  const baseIncome = card.income !== undefined ? card.income : character.baseMultiplier;
+  const basePower = card.power !== undefined ? card.power : character.basePower;
+
+  return {
+    income: Math.floor(baseIncome * combinedMultiplier),
+    power: Math.floor(basePower * combinedMultiplier),
+    character,
   };
 };
 
@@ -143,8 +151,9 @@ export const useGameStore = create<GameState>()(
 
           if (!targetCard) return s;
 
+          const stats = resolveCardStats(targetCard);
           const sellPrice = Math.floor(
-            targetCard.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER,
+            stats.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER,
           );
           return {
             inventory: s.inventory.filter((c) => c.id !== cardId),
@@ -158,11 +167,12 @@ export const useGameStore = create<GameState>()(
       sellCards: (cardIds) =>
         set((s) => {
           const cardsToSell = s.inventory.filter((c) => cardIds.includes(c.id));
-          const totalProfit = cardsToSell.reduce(
-            (acc, c) =>
-              acc + Math.floor(c.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER),
-            0,
-          );
+          const totalProfit = cardsToSell.reduce((acc, c) => {
+            const stats = resolveCardStats(c);
+            return (
+              acc + Math.floor(stats.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER)
+            );
+          }, 0);
 
           return {
             inventory: s.inventory.filter((c) => !cardIds.includes(c.id)),
@@ -258,9 +268,11 @@ export const useGameStore = create<GameState>()(
           GAME_CONFIG.CARD_GENERATION.ENEMY_WEIGHTS,
           GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
         );
+        const stats = resolveCardStats(newEnemy);
         const scaleFactor =
           1 + (nextLvl - 1) * GAME_CONFIG.DIMENSIONS.SCALE_FACTOR;
-        newEnemy.power = Math.floor(newEnemy.power * scaleFactor);
+        newEnemy.power = Math.floor(stats.power * scaleFactor);
+        newEnemy.income = stats.income;
 
         set((s) => {
           const nextLevel = s.dimensionLevel + 1;
@@ -345,9 +357,9 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: "rick-morty-idle-save",
-      version: 4,
+      version: 5,
       migrate: (persistedState: unknown, version: number) => {
-        let state = persistedState as PersistedGameState;
+        let state = persistedState as any;
 
         if (version === 0) {
           state = {
@@ -359,7 +371,7 @@ export const useGameStore = create<GameState>()(
         }
 
         if (version < 2) {
-          const migrateCard = (card: GameCard): GameCard => {
+          const migrateCard = (card: any): any => {
             if (!card) return card;
             if (!card.origin || card.origin === "none") {
               const charData = (characters as Character[]).find(
@@ -377,7 +389,7 @@ export const useGameStore = create<GameState>()(
           state = {
             ...state,
             inventory: state.inventory?.map(migrateCard) || [],
-            activeSlots: state.activeSlots?.map((slot) =>
+            activeSlots: state.activeSlots?.map((slot: any) =>
               slot ? migrateCard(slot) : null,
             ) || [null, null, null, null],
           };
@@ -386,7 +398,7 @@ export const useGameStore = create<GameState>()(
         if (version < 3) {
           // Fix duplicate IDs by regenerating them for all cards
           const oldInv = state.inventory || [];
-          const newInventory = oldInv.map((card: GameCard) => {
+          const newInventory = oldInv.map((card: any) => {
             const uuid = crypto.randomUUID().slice(0, 8);
             const baseId = card.id
               ? card.id.split("-").slice(0, 2).join("-")
@@ -399,11 +411,9 @@ export const useGameStore = create<GameState>()(
 
           const newActiveSlots = (
             state.activeSlots || [null, null, null, null]
-          ).map((slot) => {
+          ).map((slot: any) => {
             if (!slot) return null;
-            const oldIndex = oldInv.findIndex(
-              (c: GameCard) => c.id === slot.id,
-            );
+            const oldIndex = oldInv.findIndex((c: any) => c.id === slot.id);
             if (oldIndex !== -1 && newInventory[oldIndex]) {
               return newInventory[oldIndex];
             }
@@ -421,6 +431,31 @@ export const useGameStore = create<GameState>()(
           state = {
             ...state,
             currentEnemy: null,
+          };
+        }
+
+        if (version < 5) {
+          const migrateCardV5 = (card: any): GameCard => {
+            if (!card || card.characterId) return card;
+            const charData = (characters as Character[]).find(
+              (c) => c.name === (card.characterName || card.name),
+            );
+            return {
+              id: card.id,
+              characterId: charData?.id || 1,
+              types: card.types || ["COMMON"],
+              timestamp: card.timestamp || Date.now(),
+              income: card.income,
+              power: card.power,
+            };
+          };
+
+          state = {
+            ...state,
+            inventory: state.inventory?.map(migrateCardV5) || [],
+            activeSlots: state.activeSlots?.map((slot: any) =>
+              slot ? migrateCardV5(slot) : null,
+            ) || [null, null, null, null],
           };
         }
 
