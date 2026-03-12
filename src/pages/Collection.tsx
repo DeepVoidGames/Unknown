@@ -12,6 +12,16 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Search, Trash2, FilterX, CheckCircle2, Circle, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
@@ -29,6 +39,7 @@ const Collection = () => {
   // Sell Mode State
   const [isSellMode, setIsSellMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const filteredCards = useMemo(() => {
     return inventory
@@ -66,14 +77,13 @@ const Collection = () => {
         return acc + (stats.income * GAME_CONFIG.SELL_PRICE_MULTIPLIER);
       }, 0);
 
-    if (confirm(`Sell ${selectedIds.length} selected cards for ${Math.floor(totalProfit).toLocaleString()} Mega Seeds?`)) {
-      sellCards(selectedIds);
-      toast.success(`Sold ${selectedIds.length} cards`, {
-        description: `You received ${Math.floor(totalProfit).toLocaleString()} Mega Seeds.`,
-      });
-      setSelectedIds([]);
-      setIsSellMode(false);
-    }
+    sellCards(selectedIds);
+    toast.success(`Sold ${selectedIds.length} cards`, {
+      description: `You received ${Math.floor(totalProfit).toLocaleString()} Mega Seeds.`,
+    });
+    setSelectedIds([]);
+    setIsSellMode(false);
+    setIsConfirmOpen(false);
   };
 
   const selectedTotalProfit = useMemo(() => {
@@ -222,7 +232,7 @@ const Collection = () => {
                 variant="secondary" 
                 size="default" 
                 className="font-bold"
-                onClick={handleBulkSell}
+                onClick={() => setIsConfirmOpen(true)}
                 disabled={selectedIds.length === 0}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
@@ -232,6 +242,28 @@ const Collection = () => {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are about to sell {selectedIds.length} cards for {Math.floor(selectedTotalProfit).toLocaleString()} Mega Seeds. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleBulkSell}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sell Cards
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Footer />
     </div>
   );
