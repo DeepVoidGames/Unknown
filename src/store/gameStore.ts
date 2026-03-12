@@ -11,7 +11,7 @@ import { createUpgradeSlice, UpgradeSlice } from "./slices/upgradeSlice";
 import { createPackSlice, PackSlice } from "./slices/packSlice";
 
 // Re-export utilities for component usage
-export { resolveCardStats } from "./cardUtils";
+export { resolveCardStats, calculateCurrentIncome } from "./cardUtils";
 
 export type GameStore = CurrencySlice &
   InventorySlice &
@@ -30,7 +30,7 @@ export const useGameStore = create<GameStore>()(
     }),
     {
       name: "rick-morty-idle-save",
-      version: 5,
+      version: 6,
       migrate: (persistedState: unknown, version: number) => {
         let state = persistedState as any;
 
@@ -39,7 +39,7 @@ export const useGameStore = create<GameStore>()(
             ...state,
             inventory: [],
             activeSlots: [null, null, null, null],
-            upgrades: { seeds: 0, power: 0 },
+            upgrades: { seeds: 0, power: 0, inventory: 0 },
           };
         }
 
@@ -131,6 +131,18 @@ export const useGameStore = create<GameStore>()(
               state.activeSlots?.map((slot: any) =>
                 slot ? migrateCardV5(slot) : null,
               ) || [null, null, null, null],
+          };
+        }
+
+        if (version < 6) {
+          state = {
+            ...state,
+            upgrades: {
+              ...state.upgrades,
+              inventory: state.upgrades?.inventory ?? 0,
+            },
+            maxInventory:
+              state.maxInventory ?? 50,
           };
         }
 

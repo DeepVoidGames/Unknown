@@ -1,4 +1,4 @@
-import { Character, GameCard, CardType } from "@/types/game";
+import { Character, GameCard, CardType, GameState } from "@/types/game";
 import characters from "@/data/characters.json";
 import cardTypes from "@/data/cardTypes.json";
 import { GAME_CONFIG } from "@/config/gameConfig";
@@ -83,4 +83,33 @@ export const resolveCardStats = (card: GameCard) => {
     power: Math.floor(basePower * combinedMultiplier),
     character,
   };
+};
+
+/**
+ * Calculates the current income per second based on the game state.
+ * @param state The current game state
+ * @returns Income per second
+ */
+export const calculateCurrentIncome = (
+  state: Pick<GameState, "activeSlots" | "inventory" | "upgrades">,
+) => {
+  const activeIncome = state.activeSlots.reduce(
+    (sum: number, slot: GameCard | null) => {
+      if (!slot) return sum;
+      return sum + resolveCardStats(slot).income;
+    },
+    0,
+  );
+
+  const inactiveCards = state.inventory.filter(
+    (c: GameCard) =>
+      !state.activeSlots.some((s: GameCard | null) => s?.id === c.id),
+  ).length;
+
+  const bonus = 1 + inactiveCards * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS;
+
+  const upgradeBonus =
+    1 + state.upgrades.seeds * GAME_CONFIG.UPGRADES.seeds.BONUS_PER_LEVEL;
+
+  return activeIncome * bonus * upgradeBonus;
 };

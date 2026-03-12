@@ -48,7 +48,7 @@ export const createUpgradeSlice: StateCreator<
     set((s) => {
       const newLevel = s.upgrades[type] + 1;
       trackUpgrade(type, newLevel, cost);
-      
+
       const newState: Partial<GameStore> = {
         seeds: s.seeds - cost,
         upgrades: {

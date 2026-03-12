@@ -1,9 +1,9 @@
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore, calculateCurrentIncome } from '@/store/gameStore';
 import { Leaf, TrendingUp, Settings, Beaker, Library } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { formatNumber, formatCurrency } from '@/lib/utils';
-import { GAME_CONFIG, calculateCurrentIncome } from '@/config/gameConfig';
+import { GAME_CONFIG } from '@/config/gameConfig';
 
 export function Header() {
   const seeds = useGameStore((s) => s.seeds);
