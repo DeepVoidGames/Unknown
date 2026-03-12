@@ -87,21 +87,34 @@ const generateCard = (
 };
 
 export const resolveCardStats = (card: GameCard) => {
+  if (!card) {
+    const character = (characters as Character[])[0];
+    return {
+      income: 0,
+      power: 0,
+      character,
+    };
+  }
+
   const character =
     (characters as Character[]).find((c) => c.id === card.characterId) ||
     (characters as Character[])[0];
+
+  const types = card.types || [];
 
   if (card.income !== undefined && card.power !== undefined) {
     return { income: card.income, power: card.power, character };
   }
 
-  const combinedMultiplier = card.types.reduce((acc, typeId) => {
+  const combinedMultiplier = types.reduce((acc, typeId) => {
     const type = (cardTypes as CardType[]).find((t) => t.id === typeId);
     return acc * (type?.multiplier || 1);
   }, 1);
 
-  const baseIncome = card.income !== undefined ? card.income : character.baseMultiplier;
-  const basePower = card.power !== undefined ? card.power : character.basePower;
+  const baseIncome =
+    card.income !== undefined ? card.income : character.baseMultiplier;
+  const basePower =
+    card.power !== undefined ? card.power : character.basePower;
 
   return {
     income: Math.floor(baseIncome * combinedMultiplier),
@@ -435,8 +448,9 @@ export const useGameStore = create<GameState>()(
         }
 
         if (version < 5) {
-          const migrateCardV5 = (card: any): GameCard => {
-            if (!card || card.characterId) return card;
+          const migrateCardV5 = (card: any): GameCard | null => {
+            if (!card) return null;
+            if (card.characterId) return card;
             const charData = (characters as Character[]).find(
               (c) => c.name === (card.characterName || card.name),
             );
@@ -452,10 +466,11 @@ export const useGameStore = create<GameState>()(
 
           state = {
             ...state,
-            inventory: state.inventory?.map(migrateCardV5) || [],
-            activeSlots: state.activeSlots?.map((slot: any) =>
-              slot ? migrateCardV5(slot) : null,
-            ) || [null, null, null, null],
+            inventory: state.inventory?.map(migrateCardV5).filter(Boolean) || [],
+            activeSlots:
+              state.activeSlots?.map((slot: any) =>
+                slot ? migrateCardV5(slot) : null,
+              ) || [null, null, null, null],
           };
         }
 

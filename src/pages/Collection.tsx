@@ -32,16 +32,20 @@ const Collection = () => {
 
   const filteredCards = useMemo(() => {
     return inventory
-      .map(card => ({ card, stats: resolveCardStats(card) }))
-      .filter(({ card, stats }) => {
-        const matchesSearch = stats.character.name.toLowerCase().includes(search.toLowerCase());
-        const matchesType = typeFilter === 'ALL' || (card.types || []).includes(typeFilter);
+      .filter(Boolean)
+      .map((card) => ({ card, stats: resolveCardStats(card) }))
+      .filter(({ stats }) => {
+        const matchesSearch = stats.character.name
+          .toLowerCase()
+          .includes(search.toLowerCase());
+        const matchesType =
+          typeFilter === "ALL" || (card.types || []).includes(typeFilter);
         return matchesSearch && matchesType;
       })
       .sort((a, b) => {
-        if (sortBy === 'newest') return b.card.timestamp - a.card.timestamp;
-        if (sortBy === 'oldest') return a.card.timestamp - b.card.timestamp;
-        if (sortBy === 'income') return b.stats.income - a.stats.income;
+        if (sortBy === "newest") return b.card.timestamp - a.card.timestamp;
+        if (sortBy === "oldest") return a.card.timestamp - b.card.timestamp;
+        if (sortBy === "income") return b.stats.income - a.stats.income;
         return 0;
       });
   }, [inventory, search, typeFilter, sortBy]);

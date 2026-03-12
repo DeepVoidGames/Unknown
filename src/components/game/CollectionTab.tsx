@@ -26,9 +26,10 @@ export function CollectionTab() {
 
   const displayCards = useMemo(() => {
     return inventory
-      .map(card => ({ card, stats: resolveCardStats(card) }))
-      .filter(({ stats }) => 
-        stats.character.name.toLowerCase().includes(search.toLowerCase())
+      .filter(Boolean)
+      .map((card) => ({ card, stats: resolveCardStats(card) }))
+      .filter(({ stats }) =>
+        stats.character.name.toLowerCase().includes(search.toLowerCase()),
       )
       .sort((a, b) => b.stats.income - a.stats.income)
       .slice(0, 4);
