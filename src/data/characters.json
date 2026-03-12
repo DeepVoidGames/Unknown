@@ -180,7 +180,7 @@
     "location": "Citadel of Ricks",
     "avatarId": 14,
     "baseMultiplier": 60,
-    "basePower": 120
+    "basePower": 125
   },
   {
     "id": 15,
@@ -232,7 +232,7 @@
     "location": "Citadel of Ricks",
     "avatarId": 18,
     "baseMultiplier": 65,
-    "basePower": 130
+    "basePower": 135
   },
   {
     "id": 19,
