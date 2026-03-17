@@ -7,6 +7,7 @@ import { createInventorySlice, InventorySlice } from "./slices/inventorySlice";
 import { createDimensionSlice, DimensionSlice } from "./slices/dimensionSlice";
 import { createUpgradeSlice, UpgradeSlice } from "./slices/upgradeSlice";
 import { createPackSlice, PackSlice } from "./slices/packSlice";
+import { createCollectionSlice, CollectionSlice } from "./slices/collectionSlice";
 import { migrateGameStore } from "./migrations";
 
 // Re-export utilities for component usage
@@ -16,7 +17,8 @@ export type GameStore = CurrencySlice &
   InventorySlice &
   DimensionSlice &
   UpgradeSlice &
-  PackSlice;
+  PackSlice &
+  CollectionSlice;
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -26,10 +28,11 @@ export const useGameStore = create<GameStore>()(
       ...createDimensionSlice(...a),
       ...createUpgradeSlice(...a),
       ...createPackSlice(...a),
+      ...createCollectionSlice(...a),
     }),
     {
       name: "rick-morty-idle-save",
-      version: 6,
+      version: 8,
       migrate: migrateGameStore,
       onRehydrateStorage: () => (state: GameStore | undefined) => {
         if (state && state.inventory.length === 0) {
@@ -38,8 +41,10 @@ export const useGameStore = create<GameStore>()(
             0,
           );
           state.addCard(starter);
+          state.addDiscovery(starter.characterId, starter.types);
         }
       },
     },
   ),
 );
+

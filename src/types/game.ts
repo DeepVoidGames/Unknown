@@ -44,5 +44,6 @@ export interface GameState {
     power: number;
     inventory: number;
   };
+  discoveredCards: Record<number, string[]>; // characterId -> array of rarity typeIds
   lastSaved: number;
 }

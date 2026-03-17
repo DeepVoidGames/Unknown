@@ -26,19 +26,21 @@ export const createInventorySlice: StateCreator<
   activeSlots: [null, null, null, null],
 
   addCard: (card) => {
-    const { inventory, maxInventory } = get();
+    const { inventory, maxInventory, addDiscovery } = get();
     if (inventory.length >= maxInventory) return false;
     set((s) => ({ inventory: [...s.inventory, card] }));
+    addDiscovery(card.characterId, card.types);
     return true;
   },
 
   addCards: (cards) => {
-    const { inventory, maxInventory } = get();
+    const { inventory, maxInventory, addDiscovery } = get();
     const availableSpace = maxInventory - inventory.length;
     if (availableSpace <= 0) return false;
 
     const cardsToAdd = cards.slice(0, availableSpace);
     set((s) => ({ inventory: [...s.inventory, ...cardsToAdd] }));
+    cardsToAdd.forEach((card) => addDiscovery(card.characterId, card.types));
     return true;
   },
 
