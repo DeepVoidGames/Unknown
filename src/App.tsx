@@ -18,6 +18,7 @@ import { formatCurrency } from "@/lib/utils";
 import { GAME_CONFIG } from "@/config/gameConfig";
 import { initGA, trackPageView } from "@/lib/analytics";
 import { useLocation } from "react-router-dom";
+import { AutoOpenManager } from "@/components/game/AutoOpenManager";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +81,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <AutoOpenManager />
         <BrowserRouter>
           <AnalyticsTracker />
           <Routes>
