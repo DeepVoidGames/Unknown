@@ -4,7 +4,7 @@ import { CollectionTab } from "@/components/game/CollectionTab";
 import { Footer } from "@/components/game/Footer";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Package, Map, Beaker } from "lucide-react";
+import { Package, Map, Beaker, Dna } from "lucide-react";
 
 const Index = () => {
   return (
@@ -22,9 +22,19 @@ const Index = () => {
             Portal Shop
           </Button>
         </Link>
-        <Link to="/dimension">
+        <Link to="/splicer">
           <Button
             variant="secondary"
+            size="lg"
+            className="font-display font-bold gap-3 px-8 shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all border border-primary/20"
+          >
+            <Dna className="w-5 h-5 text-primary" />
+            Genetic Splicer
+          </Button>
+        </Link>
+        <Link to="/dimension">
+          <Button
+            variant="outline"
             size="lg"
             className="font-display font-bold gap-3 px-8 shadow-lg shadow-secondary/20 hover:shadow-secondary/40 transition-all"
           >

@@ -9,6 +9,7 @@ import Packs from "./pages/Packs";
 import Settings from "./pages/Settings";
 import Dimension from "./pages/Dimension";
 import Upgrades from "./pages/Upgrades";
+import Splicer from "./pages/Splicer";
 import NotFound from "./pages/NotFound";
 
 import { useEffect, useRef } from "react";
@@ -91,6 +92,7 @@ const App = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/dimension" element={<Dimension />} />
             <Route path="/upgrades" element={<Upgrades />} />
+            <Route path="/splicer" element={<Splicer />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

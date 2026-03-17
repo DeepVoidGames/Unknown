@@ -9,6 +9,7 @@ import { createUpgradeSlice, UpgradeSlice } from "./slices/upgradeSlice";
 import { createPackSlice, PackSlice } from "./slices/packSlice";
 import { createCollectionSlice, CollectionSlice } from "./slices/collectionSlice";
 import { createAutoOpenSlice, AutoOpenSlice } from "./slices/autoOpenSlice";
+import { createCraftingSlice, CraftingSlice } from "./slices/craftingSlice";
 import { migrateGameStore } from "./migrations";
 
 // Re-export utilities for component usage
@@ -20,7 +21,8 @@ export type GameStore = CurrencySlice &
   UpgradeSlice &
   PackSlice &
   CollectionSlice &
-  AutoOpenSlice;
+  AutoOpenSlice &
+  CraftingSlice;
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -32,6 +34,7 @@ export const useGameStore = create<GameStore>()(
       ...createPackSlice(...a),
       ...createCollectionSlice(...a),
       ...createAutoOpenSlice(...a),
+      ...createCraftingSlice(...a),
     }),
     {
       name: "rick-morty-idle-save",
