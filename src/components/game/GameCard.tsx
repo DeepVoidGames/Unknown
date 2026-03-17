@@ -1,18 +1,11 @@
 import { type GameCard as GameCardType } from "@/types/game";
-import {
-  Sparkles,
-  Zap,
-  Star,
-  Circle,
-  Coins,
-  Trophy,
-  RefreshCw,
-  Sword,
-  Leaf,
-  LucideIcon,
-} from "lucide-react";
-import { formatNumber } from "@/lib/utils";
 import { resolveCardStats } from "@/store/gameStore";
+import { RARITY_STYLES, getPrimaryType } from "@/config/rarityConfig";
+import { CardImage } from "./card-parts/CardImage";
+import { CardStatusBadge } from "./card-parts/CardStatusBadge";
+import { CardStats } from "./card-parts/CardStats";
+import { CardTypes } from "./card-parts/CardTypes";
+import { CardRarityOverlay } from "./card-parts/CardRarityOverlay";
 
 interface GameCardProps {
   card: GameCardType;
@@ -20,82 +13,14 @@ interface GameCardProps {
   isActive?: boolean;
 }
 
-type RarityOrType =
-  | "COMMON"
-  | "NORMAL"
-  | "RARE"
-  | "HOLO"
-  | "FULL_ART"
-  | "SILVER"
-  | "GOLD"
-  | "REVERT"
-  | "SWORD";
-
-const typeIcons = {
-  COMMON: Circle,
-  NORMAL: Circle,
-  RARE: Star,
-  HOLO: Sparkles,
-  FULL_ART: Zap,
-  SILVER: Coins,
-  GOLD: Trophy,
-  REVERT: RefreshCw,
-  SWORD: Sword,
-} satisfies Record<RarityOrType, LucideIcon>;
-
-const rarityConfig = {
-  COMMON: { border: "border-border", bg: "bg-card" },
-  NORMAL: { border: "border-border", bg: "bg-card" },
-  RARE: { border: "border-blue-400/60 animate-rare-pulse", bg: "bg-card" },
-  HOLO: { border: "border-rarity-holo", bg: "bg-card" },
-  FULL_ART: { border: "border-rarity-fullart", bg: "bg-card" },
-  SILVER: { border: "border-slate-300", bg: "bg-slate-900/40" },
-  GOLD: { border: "border-yellow-500", bg: "bg-yellow-900/20" },
-  REVERT: { border: "border-red-500", bg: "bg-black" },
-} satisfies Record<string, { border: string; bg: string }>;
-
 export function GameCard({ card, onClick, isActive }: GameCardProps) {
   const stats = resolveCardStats(card);
   const { character, income, power } = stats;
 
   const types = card.types || [];
-  const isHolo = types.includes("HOLO");
   const isFullArt = types.includes("FULL_ART");
-  const isGold = types.includes("GOLD");
-  const isSilver = types.includes("SILVER");
-  const isRevert = types.includes("REVERT");
-
-  const primaryType = types.includes("REVERT")
-    ? "REVERT"
-    : types.includes("GOLD")
-      ? "GOLD"
-      : types.includes("SILVER")
-        ? "SILVER"
-        : types.includes("FULL_ART")
-          ? "FULL_ART"
-          : types.includes("HOLO")
-            ? "HOLO"
-            : types.includes("RARE")
-              ? "RARE"
-              : types.includes("NORMAL")
-                ? "NORMAL"
-                : "COMMON";
-
-  const config = rarityConfig[primaryType] || rarityConfig.COMMON;
-
-  let imgSrc = `https://rickandmortyapi.com/api/character/avatar/${character.avatarId}.jpeg`;
-
-  if (character.customImage) {
-    imgSrc = character.customImage;
-  }
-
-  const imageFilter = isRevert
-    ? "invert(1) hue-rotate(180deg)"
-    : isGold
-      ? "sepia(1) saturate(5) brightness(0.8) hue-rotate(-15deg)"
-      : isSilver
-        ? "grayscale(1) brightness(1.2) contrast(1.1)"
-        : "";
+  const primaryType = getPrimaryType(types);
+  const config = RARITY_STYLES[primaryType] || RARITY_STYLES.COMMON;
 
   return (
     <button
@@ -108,44 +33,13 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
         </div>
       )}
 
-      {isHolo && (
-        <div className="absolute inset-0 animate-holo opacity-30 mix-blend-overlay z-10 pointer-events-none rounded-xl" />
-      )}
-      {isGold && (
-        <div className="absolute inset-0 bg-yellow-500/10 mix-blend-color-dodge z-10 pointer-events-none" />
-      )}
+      <CardRarityOverlay types={types} />
 
       <div className="relative h-44 overflow-hidden">
-        {isFullArt ? (
-          <img
-            src={imgSrc}
-            alt={character.name}
-            className="w-full h-full object-cover transition-all duration-500"
-            style={{ filter: imageFilter }}
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full bg-muted/50">
-            <img
-              src={imgSrc}
-              alt={character.name}
-              className="w-24 h-24 rounded-full object-cover border-2 border-border group-hover:scale-110 transition-all duration-500"
-              style={{ filter: imageFilter }}
-            />
-          </div>
-        )}
+        <CardImage character={character} types={types} isFullArt={isFullArt} />
 
         <div className="absolute top-2 right-2 z-20">
-          <span
-            className={`text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
-              character.status === "Alive"
-                ? "bg-green-500/20 text-green-400 border border-green-500/40"
-                : character.status === "Dead"
-                  ? "bg-red-500/20 text-red-400 border border-red-500/40"
-                  : "bg-gray-500/20 text-gray-400 border border-gray-500/40"
-            }`}
-          >
-            {character.status}
-          </span>
+          <CardStatusBadge status={character.status} />
         </div>
       </div>
 
@@ -159,29 +53,8 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
           <span>{character.origin}</span>
         </p>
         <div className="flex items-center justify-between">
-          <div className="flex items-center -space-x-1">
-            {types.map((tId) => {
-              const Icon = typeIcons[tId];
-              if (!Icon) return null;
-              return (
-                <Icon key={tId} className="w-3 h-3 text-muted-foreground" />
-              );
-            })}
-          </div>
-          <div className="flex flex-col items-end">
-            <div className="flex items-center gap-1">
-              <Leaf className="w-2.5 h-2.5 text-green-500 fill-green-500/20" />
-              <span className="text-xs font-bold text-primary">
-                {formatNumber(income)}/s
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Sword className="w-2.5 h-2.5 text-red-500 fill-red-500/20" />
-              <span className="text-[10px] font-bold text-red-500">
-                {formatNumber(power)}
-              </span>
-            </div>
-          </div>
+          <CardTypes types={types} />
+          <CardStats income={income} power={power} />
         </div>
         <div className="pt-1 border-t border-border/50 flex items-center justify-between opacity-60">
           <span className="text-[8px] font-body uppercase">

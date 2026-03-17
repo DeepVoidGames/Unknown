@@ -34,6 +34,21 @@ export function formatNumber(num: number, decimals: number = 1): string {
 }
 
 /**
+ * Returns the CSS filter string for a card based on its types.
+ */
+export function getCardImageFilter(types: string[]): string {
+  const isRevert = types.includes("REVERT");
+  const isGold = types.includes("GOLD");
+  const isSilver = types.includes("SILVER");
+
+  if (isRevert) return "invert(1) hue-rotate(180deg)";
+  if (isGold) return "sepia(1) saturate(5) brightness(0.8) hue-rotate(-15deg)";
+  if (isSilver) return "grayscale(1) brightness(1.2) contrast(1.1)";
+  
+  return "";
+}
+
+/**
  * Specifically for Mega Seeds and game currencies
  */
 export function formatCurrency(num: number): string {
