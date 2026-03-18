@@ -6,10 +6,13 @@ import { GAME_CONFIG } from "@/config/gameConfig";
 export const generateCard = (
   weights: Record<string, number> = GAME_CONFIG.CARD_GENERATION.DEFAULT_WEIGHTS,
   combineChance: number = GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
+  characterId?: number,
 ): GameCard => {
-  const character = (characters as Character[])[
-    Math.floor(Math.random() * characters.length)
-  ];
+  const character = characterId
+    ? characterMap.get(characterId)
+    : (characters as Character[])[
+        Math.floor(Math.random() * characters.length)
+      ];
 
   const typeRoll = Math.random();
   let baseTypeId = "COMMON";

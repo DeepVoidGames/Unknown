@@ -27,7 +27,7 @@ export const createCraftingSlice: StateCreator<
 > = (set, get) => ({
   spliceCards: (cardIds) => {
     const { inventory, addCard, addDiscovery } = get();
-    
+
     if (cardIds.length !== 5) {
       toast.error("Splicer requires exactly 5 cards!");
       return null;
@@ -42,13 +42,17 @@ export const createCraftingSlice: StateCreator<
     const allSame = rarities.every((r) => r === firstRarity);
 
     if (!allSame) {
-      toast.error("Mixed signals!", { description: "All cards must be of the same rarity tier." });
+      toast.error("Mixed signals!", {
+        description: "All cards must be of the same rarity tier.",
+      });
       return null;
     }
 
     const currentIndex = RARITY_ORDER.indexOf(firstRarity);
     if (currentIndex === -1 || currentIndex === RARITY_ORDER.length - 1) {
-      toast.error("Maximum resonance reached!", { description: "These cards cannot be upgraded further." });
+      toast.error("Maximum resonance reached!", {
+        description: "These cards cannot be upgraded further.",
+      });
       return null;
     }
 
@@ -57,15 +61,19 @@ export const createCraftingSlice: StateCreator<
     // Remove old cards
     set((state) => ({
       inventory: state.inventory.filter((c) => !cardIds.includes(c.id)),
-      activeSlots: state.activeSlots.map((slot) => 
-        slot && cardIds.includes(slot.id) ? null : slot
+      activeSlots: state.activeSlots.map((slot) =>
+        slot && cardIds.includes(slot.id) ? null : slot,
       ),
     }));
 
     // Generate new card of next rarity
     // We pass a weights object with 100% chance for the next rarity
-    const newCard = generateCard({ [nextRarity]: 1 }, 0.1); // Small chance for additional random type
-    
+    const newCard = generateCard(
+      { [nextRarity]: 1 },
+      0.1,
+      cardsToSplice[0]?.characterId,
+    ); // Small chance for additional random type
+
     addCard(newCard);
     addDiscovery(newCard.characterId, newCard.types);
 
