@@ -14,35 +14,35 @@
   {
     "id": "HOLO",
     "label": "Holo",
-    "multiplier": 3,
+    "multiplier": 4,
     "canCombine": true,
     "combinesWith": ["FULL_ART"]
   },
   {
     "id": "FULL_ART",
     "label": "Full Art",
-    "multiplier": 4,
+    "multiplier": 8,
     "canCombine": true,
     "combinesWith": ["HOLO", "SILVER", "GOLD", "REVERT"]
   },
   {
     "id": "SILVER",
     "label": "Silver",
-    "multiplier": 6,
+    "multiplier": 10,
     "canCombine": true,
     "combinesWith": ["FULL_ART"]
   },
   {
     "id": "GOLD",
     "label": "Gold",
-    "multiplier": 10,
+    "multiplier": 12,
     "canCombine": true,
     "combinesWith": ["FULL_ART"]
   },
   {
     "id": "REVERT",
     "label": "Revert",
-    "multiplier": 15,
+    "multiplier": 20,
     "canCombine": true,
     "combinesWith": ["FULL_ART"]
   }

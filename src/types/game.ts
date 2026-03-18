@@ -16,7 +16,7 @@ export interface Character {
   origin: string;
   location: string;
   avatarId: number;
-  baseMultiplier: number;
+  iq: number;
   basePower: number;
   customImage?: string;
 }

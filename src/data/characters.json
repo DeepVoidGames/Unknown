@@ -10,7 +10,7 @@
     "location": "Citadel of Ricks",
     "customImage": "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
     "avatarId": 1,
-    "baseMultiplier": 1000,
+    "iq": 500,
     "basePower": 500
   },
   {
@@ -23,7 +23,7 @@
     "origin": "unknown",
     "location": "Citadel of Ricks",
     "avatarId": 2,
-    "baseMultiplier": 25,
+    "iq": 90,
     "basePower": 150
   },
   {
@@ -36,7 +36,7 @@
     "origin": "Earth (Replacement Dimension)",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 3,
-    "baseMultiplier": 45,
+    "iq": 115,
     "basePower": 100
   },
   {
@@ -49,7 +49,7 @@
     "origin": "Earth (Replacement Dimension)",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 4,
-    "baseMultiplier": 50,
+    "iq": 155,
     "basePower": 15
   },
   {
@@ -62,7 +62,7 @@
     "origin": "Earth (Replacement Dimension)",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 5,
-    "baseMultiplier": 150,
+    "iq": 20,
     "basePower": 1
   },
   {
@@ -75,7 +75,7 @@
     "origin": "Abadango",
     "location": "Abadango",
     "avatarId": 6,
-    "baseMultiplier": 85,
+    "iq": 130,
     "basePower": 45
   },
   {
@@ -88,7 +88,7 @@
     "origin": "Earth (Replacement Dimension)",
     "location": "Testicle Monster Dimension",
     "avatarId": 7,
-    "baseMultiplier": 500,
+    "iq": 120,
     "basePower": 66
   },
   {
@@ -101,7 +101,7 @@
     "origin": "unknown",
     "location": "Citadel of Ricks",
     "avatarId": 8,
-    "baseMultiplier": 250,
+    "iq": 245,
     "basePower": 450
   },
   {
@@ -114,7 +114,7 @@
     "origin": "Earth (Replacement Dimension)",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 9,
-    "baseMultiplier": 1500,
+    "iq": 230,
     "basePower": 5
   },
   {
@@ -127,7 +127,7 @@
     "origin": "unknown",
     "location": "Worldender's lair",
     "avatarId": 10,
-    "baseMultiplier": 100,
+    "iq": 110,
     "basePower": 300
   },
   {
@@ -140,7 +140,7 @@
     "origin": "Earth (C-137)",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 11,
-    "baseMultiplier": 5000,
+    "iq": 400,
     "basePower": 0
   },
   {
@@ -153,7 +153,7 @@
     "origin": "Earth (C-137)",
     "location": "Anatomy Park",
     "avatarId": 12,
-    "baseMultiplier": 12,
+    "iq": 70,
     "basePower": 5
   },
   {
@@ -166,7 +166,7 @@
     "origin": "unknown",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 13,
-    "baseMultiplier": 50,
+    "iq": 60,
     "basePower": 50
   },
   {
@@ -179,7 +179,7 @@
     "origin": "unknown",
     "location": "Citadel of Ricks",
     "avatarId": 14,
-    "baseMultiplier": 60,
+    "iq": 85,
     "basePower": 125
   },
   {
@@ -192,7 +192,7 @@
     "origin": "unknown",
     "location": "Citadel of Ricks",
     "avatarId": 15,
-    "baseMultiplier": 500,
+    "iq": 360,
     "basePower": 400
   },
   {
@@ -205,7 +205,7 @@
     "origin": "unknown",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 16,
-    "baseMultiplier": 75,
+    "iq": 90,
     "basePower": 80
   },
   {
@@ -218,7 +218,7 @@
     "origin": "Earth (C-137)",
     "location": "Anatomy Park",
     "avatarId": 17,
-    "baseMultiplier": 40,
+    "iq": 100,
     "basePower": 20
   },
   {
@@ -231,7 +231,7 @@
     "origin": "unknown",
     "location": "Citadel of Ricks",
     "avatarId": 18,
-    "baseMultiplier": 65,
+    "iq": 88,
     "basePower": 135
   },
   {
@@ -245,7 +245,7 @@
     "location": "unknown",
     "customImage": "https://static.wikia.nocookie.net/rickandmorty/images/4/49/Antenna_Rick.png/revision/latest?cb=20161121231006",
     "avatarId": 19,
-    "baseMultiplier": 450,
+    "iq": 365,
     "basePower": 350
   },
   {
@@ -258,7 +258,7 @@
     "origin": "unknown",
     "location": "Interdimensional Cable",
     "avatarId": 20,
-    "baseMultiplier": 120,
+    "iq": 50,
     "basePower": 10
   },
   {
@@ -271,7 +271,7 @@
     "origin": "unknown",
     "location": "Citadel of Ricks",
     "avatarId": 21,
-    "baseMultiplier": 40,
+    "iq": 82,
     "basePower": 110
   },
   {
@@ -284,7 +284,7 @@
     "origin": "unknown",
     "location": "Citadel of Ricks",
     "avatarId": 22,
-    "baseMultiplier": 600,
+    "iq": 370,
     "basePower": 450
   },
   {
@@ -297,7 +297,7 @@
     "origin": "unknown",
     "location": "Immortality Field Resort",
     "avatarId": 23,
-    "baseMultiplier": 120,
+    "iq": 80,
     "basePower": 50
   },
   {
@@ -310,7 +310,7 @@
     "origin": "Signus 5 Expanse",
     "location": "Signus 5 Expanse",
     "avatarId": 24,
-    "baseMultiplier": 2000,
+    "iq": 330,
     "basePower": 10
   },
   {
@@ -323,7 +323,7 @@
     "origin": "Post-Apocalyptic Earth",
     "location": "Post-Apocalyptic Earth",
     "avatarId": 25,
-    "baseMultiplier": 80,
+    "iq": 65,
     "basePower": 250
   },
   {
@@ -336,7 +336,7 @@
     "origin": "Purge Planet",
     "location": "Purge Planet",
     "avatarId": 26,
-    "baseMultiplier": 90,
+    "iq": 110,
     "basePower": 180
   },
   {
@@ -349,7 +349,7 @@
     "origin": "unknown",
     "location": "Citadel of Ricks",
     "avatarId": 27,
-    "baseMultiplier": 50,
+    "iq": 95,
     "basePower": 95
   },
   {
@@ -362,7 +362,7 @@
     "origin": "unknown",
     "location": "Interdimensional Cable",
     "avatarId": 28,
-    "baseMultiplier": 150,
+    "iq": 95,
     "basePower": 300
   },
   {
@@ -375,7 +375,7 @@
     "origin": "unknown",
     "location": "Interdimensional Cable",
     "avatarId": 29,
-    "baseMultiplier": 100,
+    "iq": 90,
     "basePower": 40
   },
   {
@@ -388,7 +388,7 @@
     "origin": "unknown",
     "location": "unknown",
     "avatarId": 30,
-    "baseMultiplier": 250,
+    "iq": 140,
     "basePower": 50
   },
   {
@@ -401,7 +401,7 @@
     "origin": "unknown",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 31,
-    "baseMultiplier": 300,
+    "iq": 180,
     "basePower": 150
   },
   {
@@ -414,7 +414,7 @@
     "origin": "unknown",
     "location": "Earth (Replacement Dimension)",
     "avatarId": 32,
-    "baseMultiplier": 75,
+    "iq": 80,
     "basePower": 45
   },
   {
@@ -427,7 +427,7 @@
     "origin": "Venzenulon 7",
     "location": "Venzenulon 7",
     "avatarId": 33,
-    "baseMultiplier": 40,
+    "iq": 55,
     "basePower": 20
   },
   {
@@ -440,7 +440,7 @@
     "origin": "unknown",
     "location": "Interdimensional Cable",
     "avatarId": 34,
-    "baseMultiplier": 120,
+    "iq": 145,
     "basePower": 60
   },
   {
@@ -453,7 +453,7 @@
     "origin": "Bepis 9",
     "location": "Bepis 9",
     "avatarId": 35,
-    "baseMultiplier": 85,
+    "iq": 75,
     "basePower": 35
   },
   {
@@ -466,7 +466,7 @@
     "origin": "unknown",
     "location": "unknown",
     "avatarId": 36,
-    "baseMultiplier": 1500,
+    "iq": 320,
     "basePower": 200
   },
   {
@@ -479,7 +479,7 @@
     "origin": "Earth (C-500A)",
     "location": "Earth (C-500A)",
     "avatarId": 37,
-    "baseMultiplier": 55,
+    "iq": 158,
     "basePower": 20
   },
   {
@@ -492,7 +492,7 @@
     "origin": "Earth (C-137)",
     "location": "Earth (C-137)",
     "avatarId": 38,
-    "baseMultiplier": 50,
+    "iq": 160,
     "basePower": 15
   },
   {
@@ -505,7 +505,7 @@
     "origin": "Earth (Evil Rick's Target Dimension)",
     "location": "Earth (Evil Rick's Target Dimension)",
     "avatarId": 39,
-    "baseMultiplier": 50,
+    "iq": 150,
     "basePower": 15
   },
   {
@@ -518,7 +518,7 @@
     "origin": "Nuptia 4",
     "location": "Nuptia 4",
     "avatarId": 40,
-    "baseMultiplier": 400,
+    "iq": 190,
     "basePower": 250
   }
 ]

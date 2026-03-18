@@ -116,7 +116,10 @@ export function AutoOpenManager() {
                      alt=""
                    />
                    <div className="flex-1 min-w-0">
-                     <p className="text-[10px] font-bold truncate">{stats.character.name}</p>
+                     <div className="flex items-center justify-between gap-2">
+                       <p className="text-[10px] font-bold truncate">{stats.character.name}</p>
+                       <span className="text-[7px] font-bold text-purple-400">IQ {stats.character.iq}</span>
+                     </div>
                      <div className="flex gap-1">
                        {card.types.map(t => (
                          <span key={t} className="text-[6px] px-1 rounded-sm bg-primary/20 text-primary-foreground font-bold">{t}</span>

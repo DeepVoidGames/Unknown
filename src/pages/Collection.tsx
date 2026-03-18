@@ -321,9 +321,16 @@ const Collection = () => {
                     </div>
                     
                     <div className="p-3 space-y-2">
-                      <p className="font-display text-[10px] font-bold text-foreground truncate leading-tight">
-                        {isDiscovered ? char.name : "???"}
-                      </p>
+                      <div className="flex justify-between items-start gap-1">
+                        <p className="font-display text-[10px] font-bold text-foreground truncate leading-tight flex-1">
+                          {isDiscovered ? char.name : "???"}
+                        </p>
+                        {isDiscovered && (
+                          <span className="text-[8px] font-bold text-purple-400 whitespace-nowrap">
+                            IQ {char.iq}
+                          </span>
+                        )}
+                      </div>
                       
                       {/* Rarity Indicators */}
                       <div className="flex flex-wrap gap-1">

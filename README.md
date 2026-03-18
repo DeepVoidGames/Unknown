@@ -52,7 +52,7 @@ Open `src/data/characters.json` and add a new object to the array:
 ```json
 {
   "name": "Character Name",
-  "baseMultiplier": 5,
+  "iq": 100,
   "status": "Alive",
   "species": "Human",
   "avatarId": 1
@@ -60,7 +60,7 @@ Open `src/data/characters.json` and add a new object to the array:
 ```
 
 - **name**: Display name of the character.
-- **baseMultiplier**: Base Mega Seeds per second (integer or float).
+- **iq**: Intelligence Quotient (1-400), used in Mega Seeds production formula: `floor(iq^1.5 * rarity_multiplier * 0.1)`.
 - **status**: Character status (`"Alive"`, `"Dead"`, or `"Unknown"`).
 - **species**: The species of the character.
 - **avatarId**: The ID used for the character's image.

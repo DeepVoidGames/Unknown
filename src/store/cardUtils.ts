@@ -76,12 +76,17 @@ export const resolveCardStats = (card: GameCard) => {
     return acc * (type?.multiplier || 1);
   }, 1);
 
-  const baseIncome =
-    card.income !== undefined ? card.income : character.baseMultiplier;
   const basePower = card.power !== undefined ? card.power : character.basePower;
 
+  // New formula: (iq^1.5) * rarityMultiplier / 10
+  const calculatedIncome = Math.floor(
+    Math.pow(character.iq, 1.5) * combinedMultiplier * 0.1,
+  );
+
+  const income = card.income !== undefined ? card.income : calculatedIncome;
+
   return {
-    income: Math.floor(baseIncome * combinedMultiplier),
+    income,
     power: Math.floor(basePower * combinedMultiplier),
     character,
   };
