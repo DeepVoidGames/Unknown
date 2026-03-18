@@ -52,7 +52,7 @@ const Collection = () => {
     return inventory
       .filter(Boolean)
       .map((card) => ({ card, stats: resolveCardStats(card) }))
-      .filter(({ stats }) => {
+      .filter(({ card, stats }) => {
         const matchesSearch = stats.character.name
           .toLowerCase()
           .includes(search.toLowerCase());
@@ -65,6 +65,7 @@ const Collection = () => {
         if (sortBy === "oldest") return a.card.timestamp - b.card.timestamp;
         if (sortBy === "income") return b.stats.income - a.stats.income;
         if (sortBy === "iq") return b.stats.character.iq - a.stats.character.iq;
+        if (sortBy === "power") return b.stats.power - a.stats.power;
         return 0;
       });
   }, [inventory, search, typeFilter, sortBy]);
@@ -230,6 +231,7 @@ const Collection = () => {
                   <SelectItem value="oldest">Oldest First</SelectItem>
                   <SelectItem value="income">Highest Income</SelectItem>
                   <SelectItem value="iq">Highest IQ</SelectItem>
+                  <SelectItem value="power">Highest Power</SelectItem>
                 </SelectContent>
               </Select>
             </>
@@ -370,19 +372,38 @@ const Collection = () => {
 
       {/* Sell Mode Floating Bar */}
       {isSellMode && activeTab === 'inventory' && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-50 animate-in slide-in-from-bottom-10 duration-300">
-          <div className="bg-destructive border-2 border-destructive-foreground/20 p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-4">
-            <div className="text-destructive-foreground">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-50 animate-in slide-in-from-bottom-10 duration-300">
+          <div className="bg-destructive/95 backdrop-blur-md border-2 border-white/20 p-4 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-destructive-foreground text-center sm:text-left">
               <p className="font-display font-bold text-lg">{selectedIds.length} Selected</p>
               <p className="text-xs opacity-80">
                 Total: {Math.floor(selectedTotalProfit).toLocaleString()} Seeds
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               <Button 
                 variant="outline" 
-                size="sm" 
-                className="bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                size="default" 
+                className="bg-white/10 border-white/20 hover:bg-white/20 text-white font-bold min-w-[120px]"
+                onClick={() => {
+                  const allFilteredIds = filteredCards.map(f => f.card.id);
+                  const allSelected = allFilteredIds.every(id => selectedIds.includes(id));
+                  
+                  if (allSelected) {
+                    setSelectedIds(prev => prev.filter(id => !allFilteredIds.includes(id)));
+                  } else {
+                    setSelectedIds(prev => Array.from(new Set([...prev, ...allFilteredIds])));
+                  }
+                }}
+              >
+                {filteredCards.map(f => f.card.id).every(id => selectedIds.includes(id)) 
+                  ? "Deselect All" 
+                  : "Select All Visible"}
+              </Button>
+              <Button 
+                variant="outline" 
+                size="default" 
+                className="bg-white/10 border-white/20 hover:bg-white/20 text-white font-bold"
                 onClick={() => setSelectedIds([])}
               >
                 Clear
@@ -390,7 +411,7 @@ const Collection = () => {
               <Button 
                 variant="secondary" 
                 size="default" 
-                className="font-bold"
+                className="font-bold shadow-lg"
                 onClick={() => setIsConfirmOpen(true)}
                 disabled={selectedIds.length === 0}
               >
