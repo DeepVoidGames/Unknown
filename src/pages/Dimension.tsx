@@ -140,12 +140,12 @@ const Dimension = () => {
 
         if (milestoneUnlocked) {
           toast.success(`MILESTONE REACHED!`, {
-            description: `You unlocked: ${milestoneUnlocked}! +${inventoryBonus} Card Slots!`,
+            description: `You unlocked: ${milestoneUnlocked}!${inventoryBonus > 0 ? ` +${inventoryBonus} Card Slots!` : ""}`,
             duration: 5000,
           });
         } else if (bonus > 0) {
           toast.success(`Victory! Level ${dimensionLevel} cleared.`, {
-            description: `Bonus: +${formatCurrency(bonus)} Mega Seeds & +${inventoryBonus} Card Slots!`,
+            description: `Bonus: +${formatCurrency(bonus)} Mega Seeds${inventoryBonus > 0 ? ` & +${inventoryBonus} Card Slots!` : ""}`,
           });
         } else {
           toast.success(`Victory! Level ${dimensionLevel} cleared.`);
