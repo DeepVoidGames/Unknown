@@ -126,8 +126,34 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-30px);
+    transform: translateY(-40px) scale(1.05);
   }
+}
+
+@keyframes damage-popup {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1.4);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-40px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.8);
+  }
+}
+
+.animate-damage {
+  animation: damage-popup 1s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
+  text-shadow: 0px 0px 6px rgba(0, 0, 0, 1);
+  font-weight: 900;
+  letter-spacing: -0.05em;
 }
 
 .animate-holo {
@@ -158,7 +184,7 @@
 }
 
 .animate-battle-jump {
-  animation: battleJump 1.5s ease-in-out infinite;
+  animation: battleJump 0.4s ease-out;
 }
 
 .discord-color {

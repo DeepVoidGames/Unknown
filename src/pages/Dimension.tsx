@@ -26,6 +26,17 @@ const Dimension = () => {
   } = useGameStore();
 
   const [isFighting, setIsFighting] = useState(false);
+  const [battleState, setBattleState] = useState<{
+    playerAttacking: boolean;
+    enemyAttacking: boolean;
+    playerDamage: number | null;
+    enemyDamage: number | null;
+  }>({
+    playerAttacking: false,
+    enemyAttacking: false,
+    playerDamage: null,
+    enemyDamage: null,
+  });
 
   // Find player's strongest card and calculate base vs bonus
   const playerStats = useMemo(() => {
@@ -66,20 +77,44 @@ const Dimension = () => {
     }
   };
 
-  const handleFight = () => {
+  const handleFight = async () => {
     if (!playerStats || !currentEnemy) return;
     
     const enemyStats = resolveCardStats(currentEnemy);
-
     setIsFighting(true);
+    const playerWins = playerStats.totalPower >= enemyStats.power;
 
+    // 1. Player Attack
+    setBattleState(s => ({ ...s, playerAttacking: true }));
+    
+    await new Promise(r => setTimeout(r, 300));
+    // Damage pops up on enemy
+    setBattleState(s => ({ ...s, enemyDamage: playerStats.totalPower }));
+    
+    await new Promise(r => setTimeout(r, 400));
+    setBattleState(s => ({ ...s, playerAttacking: false }));
+
+    // 2. Enemy Attack - ONLY if player didn't win yet
+    if (!playerWins) {
+      await new Promise(r => setTimeout(r, 200));
+      setBattleState(s => ({ ...s, enemyAttacking: true }));
+      
+      await new Promise(r => setTimeout(r, 300));
+      // Damage pops up on player
+      setBattleState(s => ({ ...s, playerDamage: enemyStats.power }));
+      
+      await new Promise(r => setTimeout(r, 400));
+      setBattleState(s => ({ ...s, enemyAttacking: false }));
+    }
+
+    // 3. Final Result
     setTimeout(() => {
       if (dimensionLevel >= GAME_CONFIG.DIMENSIONS.MAX_LEVEL) {
         toast.success(`EPIC VICTORY! You conquered the Dimension Rift!`, {
           description: `You've reached the maximum level and unlocked all rewards!`,
         });
         resetDimension(GAME_CONFIG.DIMENSIONS.MAX_LEVEL_REWARD);
-      } else if (playerStats.totalPower >= enemyStats.power) {
+      } else if (playerWins) {
         const { bonus, milestoneUnlocked } = nextDimensionLevel();
 
         if (milestoneUnlocked) {
@@ -101,8 +136,15 @@ const Dimension = () => {
         });
         resetDimension(reward);
       }
+      
       setIsFighting(false);
-    }, 1500);
+      setBattleState({
+        playerAttacking: false,
+        enemyAttacking: false,
+        playerDamage: null,
+        enemyDamage: null,
+      });
+    }, 400);
   };
 
   const enemyPower = useMemo(() => {
@@ -111,7 +153,7 @@ const Dimension = () => {
   }, [currentEnemy]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
       <Header />
 
       <main className="flex-1 p-6">
@@ -213,16 +255,28 @@ const Dimension = () => {
             </div>
           ) : (
             <div className="flex flex-col items-center py-8 space-y-12">
-              <div className="flex flex-col items-center justify-center gap-8 md:gap-24 md:flex-row w-full">
+              <div className="flex flex-col items-center justify-center gap-8 md:gap-32 md:flex-row w-full relative">
+                
                 {/* PLAYER */}
-                <div className="flex flex-col items-center space-y-4">
+                <div className="flex flex-col items-center space-y-4 relative">
                   <div className="bg-primary/10 text-primary px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
                     You
                   </div>
                   <div
-                    className={`transition-all duration-300 ${isFighting ? "animate-battle-jump" : ""}`}
+                    className={`transition-all duration-300 relative ${
+                      battleState.playerAttacking ? "animate-battle-jump" : ""
+                    }`}
                   >
                     {playerStats && <GameCard card={playerStats.card} />}
+                    
+                    {/* Player Damage Indicator */}
+                    {battleState.playerDamage !== null && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+                        <span className="text-4xl font-black text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-damage">
+                          -{formatNumber(battleState.playerDamage)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="text-center space-y-1">
                     <div className="flex items-center justify-center gap-2 text-3xl font-bold text-foreground">
@@ -238,8 +292,9 @@ const Dimension = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center border-2 border-border">
+                {/* VS ICON */}
+                <div className="flex flex-col items-center shrink-0">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center border-2 border-border shadow-inner">
                     <span className="text-xl font-display font-black italic text-muted-foreground">
                       VS
                     </span>
@@ -247,14 +302,25 @@ const Dimension = () => {
                 </div>
 
                 {/* ENEMY */}
-                <div className="flex flex-col items-center space-y-4">
+                <div className="flex flex-col items-center space-y-4 relative">
                   <div className="bg-red-500/10 text-red-500 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
                     Enemy
                   </div>
                   <div
-                    className={`transition-all duration-300 ${isFighting ? "animate-battle-jump" : ""}`}
+                    className={`transition-all duration-300 relative ${
+                      battleState.enemyAttacking ? "animate-battle-jump" : ""
+                    }`}
                   >
                     {currentEnemy && <GameCard card={currentEnemy} />}
+                    
+                    {/* Enemy Damage Indicator */}
+                    {battleState.enemyDamage !== null && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+                        <span className="text-4xl font-black text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)] animate-damage">
+                          -{formatNumber(battleState.enemyDamage)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 text-3xl font-bold text-red-500">
                     <Sword className="w-7 h-7" />
