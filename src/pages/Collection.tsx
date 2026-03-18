@@ -64,6 +64,7 @@ const Collection = () => {
         if (sortBy === "newest") return b.card.timestamp - a.card.timestamp;
         if (sortBy === "oldest") return a.card.timestamp - b.card.timestamp;
         if (sortBy === "income") return b.stats.income - a.stats.income;
+        if (sortBy === "iq") return b.stats.character.iq - a.stats.character.iq;
         return 0;
       });
   }, [inventory, search, typeFilter, sortBy]);
@@ -228,6 +229,7 @@ const Collection = () => {
                   <SelectItem value="newest">Newest First</SelectItem>
                   <SelectItem value="oldest">Oldest First</SelectItem>
                   <SelectItem value="income">Highest Income</SelectItem>
+                  <SelectItem value="iq">Highest IQ</SelectItem>
                 </SelectContent>
               </Select>
             </>
