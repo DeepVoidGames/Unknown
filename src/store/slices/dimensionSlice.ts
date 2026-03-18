@@ -10,8 +10,9 @@ export interface DimensionSlice {
   maxDimensionLevel: number;
   isDimensionActive: boolean;
   currentEnemy: GameCard | null;
+  dimensionInventoryBonus: number; // New field for permanent bonus
   startDimension: () => boolean;
-  nextDimensionLevel: () => { bonus: number; milestoneUnlocked: string | null };
+  nextDimensionLevel: () => { bonus: number; inventoryBonus: number; milestoneUnlocked: string | null };
   resetDimension: (reward: number) => void;
 }
 
@@ -25,6 +26,7 @@ export const createDimensionSlice: StateCreator<
   maxDimensionLevel: 1,
   isDimensionActive: false,
   currentEnemy: null,
+  dimensionInventoryBonus: 0,
 
   startDimension: () => {
     const { seeds } = get();
@@ -51,10 +53,12 @@ export const createDimensionSlice: StateCreator<
   nextDimensionLevel: () => {
     const { dimensionLevel } = get();
     let bonus = 0;
+    let inventoryBonus = 0;
     let milestoneUnlocked = null;
 
     if ((dimensionLevel + 1) % GAME_CONFIG.DIMENSIONS.BONUS_STEP === 0) {
       bonus = (dimensionLevel + 1) * GAME_CONFIG.DIMENSIONS.BONUS_AMOUNT;
+      inventoryBonus = GAME_CONFIG.DIMENSIONS.INVENTORY_BONUS_PER_STEP;
     }
 
     const nextLvl = dimensionLevel + 1;
@@ -73,15 +77,22 @@ export const createDimensionSlice: StateCreator<
     set((s) => {
       const nextLevel = s.dimensionLevel + 1;
       const newMax = Math.max(s.maxDimensionLevel, nextLevel);
+      
+      const newDimensionBonus = s.dimensionInventoryBonus + inventoryBonus;
+      const upgradeBonus = s.upgrades.inventory * GAME_CONFIG.UPGRADES.inventory.BONUS_PER_LEVEL;
+      const newMaxInventory = GAME_CONFIG.INITIAL_MAX_INVENTORY + upgradeBonus + newDimensionBonus;
+
       return {
         seeds: s.seeds + bonus,
+        dimensionInventoryBonus: newDimensionBonus,
+        maxInventory: newMaxInventory,
         dimensionLevel: nextLevel,
         maxDimensionLevel: newMax,
         currentEnemy: newEnemy,
       };
     });
 
-    return { bonus, milestoneUnlocked };
+    return { bonus, inventoryBonus, milestoneUnlocked };
   },
 
   resetDimension: (reward) => {

@@ -58,9 +58,11 @@ export const createUpgradeSlice: StateCreator<
       };
 
       if (type === "inventory") {
+        const currentDimensionBonus = s.dimensionInventoryBonus || 0;
         newState.maxInventory =
           GAME_CONFIG.INITIAL_MAX_INVENTORY +
-          newLevel * GAME_CONFIG.UPGRADES.inventory.BONUS_PER_LEVEL;
+          newLevel * GAME_CONFIG.UPGRADES.inventory.BONUS_PER_LEVEL + 
+          currentDimensionBonus;
       }
 
       return newState;
