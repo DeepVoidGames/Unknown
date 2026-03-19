@@ -11,6 +11,7 @@ import { createPackSlice, PackSlice } from "./slices/packSlice";
 import { createCollectionSlice, CollectionSlice } from "./slices/collectionSlice";
 import { createAutoOpenSlice, AutoOpenSlice } from "./slices/autoOpenSlice";
 import { createCraftingSlice, CraftingSlice } from "./slices/craftingSlice";
+import { createCloudSlice, CloudSlice } from "./slices/cloudSlice";
 import { migrateGameStore } from "./migrations";
 
 // Re-export utilities for component usage
@@ -23,19 +24,21 @@ export type GameStore = CurrencySlice &
   PackSlice &
   CollectionSlice &
   AutoOpenSlice &
-  CraftingSlice;
+  CraftingSlice &
+  CloudSlice;
 
 export const useGameStore = create<GameStore>()(
   persist(
-    (...a) => ({
-      ...createCurrencySlice(...a),
-      ...createInventorySlice(...a),
-      ...createDimensionSlice(...a),
-      ...createUpgradeSlice(...a),
-      ...createPackSlice(...a),
-      ...createCollectionSlice(...a),
-      ...createAutoOpenSlice(...a),
-      ...createCraftingSlice(...a),
+    (set, get, ...a) => ({
+      ...createCurrencySlice(set, get, ...a),
+      ...createInventorySlice(set, get, ...a),
+      ...createDimensionSlice(set, get, ...a),
+      ...createUpgradeSlice(set, get, ...a),
+      ...createPackSlice(set, get, ...a),
+      ...createCollectionSlice(set, get, ...a),
+      ...createAutoOpenSlice(set, get, ...a),
+      ...createCraftingSlice(set, get, ...a),
+      ...createCloudSlice(set, get, ...a),
     }),
     {
       name: "rick-morty-idle-save",
@@ -44,10 +47,8 @@ export const useGameStore = create<GameStore>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           // Recalculate maxInventory to ensure consistency
-          // Check if upgrades and dimensionInventoryBonus exist before accessing
           const upgradeBonus = (state.upgrades?.inventory || 0) * GAME_CONFIG.UPGRADES.inventory.BONUS_PER_LEVEL;
           const dimensionBonus = state.dimensionInventoryBonus || 0;
-          
           state.maxInventory = GAME_CONFIG.INITIAL_MAX_INVENTORY + upgradeBonus + dimensionBonus;
 
           if (state.inventory && state.inventory.length === 0) {
@@ -56,10 +57,20 @@ export const useGameStore = create<GameStore>()(
               0,
             );
             state.addCard(starter);
-            state.addDiscovery(starter.characterId, starter.types);
           }
         }
       },
     },
   ),
 );
+
+export const getGameState = (state: GameStore) => ({
+  seeds: state.seeds,
+  inventory: state.inventory,
+  discoveredCards: state.discoveredCards,
+  dimensionLevel: state.dimensionLevel,
+  maxDimensionLevel: state.maxDimensionLevel,
+  upgrades: state.upgrades,
+  nickname: state.nickname,
+  lastSaved: state.lastSaved,
+});
