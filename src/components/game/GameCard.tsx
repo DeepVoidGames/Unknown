@@ -54,7 +54,7 @@ export function GameCard({ card, onClick, isActive }: GameCardProps) {
         </p>
         <div className="flex items-center justify-between">
           <CardTypes types={types} />
-          <CardStats income={income} power={power} />
+          <CardStats income={income} power={power} iq={character.iq} />
         </div>
         <div className="pt-1 border-t border-border/50 flex items-center justify-between opacity-60">
           <span className="text-[8px] font-body uppercase">

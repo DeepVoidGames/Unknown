@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useGameStore, resolveCardStats } from "@/store/gameStore";
 import { GameCard } from "./GameCard";
 import { Button } from "@/components/ui/button";
-import { Package, Sparkles, X, ChevronRight, Lock } from "lucide-react";
+import { Package, Sparkles, X, ChevronRight, Lock, Play, Pause, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/utils";
 import packs from "@/data/packs.json";
@@ -30,6 +30,14 @@ export function PackOpening({ packId }: PackOpeningProps) {
   const [soldCards, setSoldCards] = useState<string[]>([]);
   const [addedToInventory, setAddedToInventory] = useState(false);
   const [portalVibration, setPortalVibration] = useState(0);
+
+  // Global Auto-open state
+  const isGlobalAutoOpenActive = useGameStore((s) => s.isAutoOpenActive);
+  const activePackId = useGameStore((s) => s.activePackId);
+  const startAutoOpen = useGameStore((s) => s.startAutoOpen);
+  const stopAutoOpen = useGameStore((s) => s.stopAutoOpen);
+
+  const isThisPackAutoOpening = isGlobalAutoOpenActive && activePackId === packId;
 
   const sellCard = useGameStore((s) => s.sellCard);
 
@@ -64,6 +72,9 @@ export function PackOpening({ packId }: PackOpeningProps) {
       return;
     }
 
+    // Stop global auto-open if manual opening starts for THIS pack
+    if (isGlobalAutoOpenActive) stopAutoOpen();
+
     // If we're already in a portal (Open Again), add current cards to inventory first if not already added
     if (showCards.length > 0 && !addedToInventory) {
       const remainingCards = revealedCards.filter(
@@ -84,6 +95,22 @@ export function PackOpening({ packId }: PackOpeningProps) {
       setTimeout(() => {
         setIsOpening(false);
       }, 2000);
+    }
+  };
+
+  const handleToggleAutoOpen = () => {
+    if (isThisPackAutoOpening) {
+      stopAutoOpen();
+    } else {
+      if (seeds < pack.cost) {
+        toast.error("Not enough Mega Seeds!");
+        return;
+      }
+      if (inventory.length >= maxInventory) {
+        toast.error("Inventory Full!");
+        return;
+      }
+      startAutoOpen(packId);
     }
   };
 
@@ -211,14 +238,30 @@ export function PackOpening({ packId }: PackOpeningProps) {
         </div>
       </div>
 
-      <Button
-        onClick={handleBuyPack}
-        disabled={seeds < pack.cost || !isUnlocked}
-        className="font-display font-bold min-w-[140px] shadow-xl"
-        variant={!isUnlocked ? "outline" : "default"}
-      >
-        {!isUnlocked ? "LOCKED" : `Buy for ${formatCurrency(pack.cost)}`}
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button
+          onClick={handleBuyPack}
+          disabled={seeds < pack.cost || !isUnlocked}
+          className="font-display font-bold min-w-[140px] shadow-xl"
+          variant={!isUnlocked ? "outline" : "default"}
+        >
+          {!isUnlocked ? "LOCKED" : `Buy for ${formatCurrency(pack.cost)}`}
+        </Button>
+        {isUnlocked && (
+          <Button
+            onClick={handleToggleAutoOpen}
+            disabled={seeds < pack.cost}
+            variant={isThisPackAutoOpening ? "destructive" : "secondary"}
+            className="font-display font-bold text-xs h-8"
+          >
+            {isThisPackAutoOpening ? (
+              <><Pause className="w-3 h-3 mr-2" /> STOP AUTO</>
+            ) : (
+              <><Play className="w-3 h-3 mr-2" /> AUTO OPEN</>
+            )}
+          </Button>
+        )}
+      </div>
 
       {isOpen && (
         <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-2xl overflow-y-auto">
@@ -320,7 +363,7 @@ export function PackOpening({ packId }: PackOpeningProps) {
                             onClick={() => revealCard(i)}
                             className="w-44 h-64 bg-gradient-to-br from-muted/80 to-muted-foreground/10 rounded-2xl border-2 border-border/50 flex flex-col items-center justify-center gap-4 hover:border-primary/50 transition-all hover:scale-105 group relative overflow-hidden shadow-2xl"
                           >
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--primary),0.1),transparent)] group-hover:opacity-100 opacity-0 transition-opacity" />
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.1),transparent)] group-hover:opacity-100 opacity-0 transition-opacity" />
                             <div className="w-14 h-14 rounded-full bg-background/50 flex items-center justify-center group-hover:rotate-12 transition-transform shadow-inner">
                               <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-primary" />
                             </div>

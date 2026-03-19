@@ -35,6 +35,7 @@ export const createCurrencySlice: StateCreator<
       maxDimensionLevel: 1,
       isDimensionActive: false,
       currentEnemy: null,
+      dimensionInventoryBonus: 0,
       upgrades: { seeds: 0, power: 0, inventory: 0 },
       lastSaved: Date.now(),
     });

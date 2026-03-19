@@ -6,10 +6,13 @@ import { GAME_CONFIG } from "@/config/gameConfig";
 export const generateCard = (
   weights: Record<string, number> = GAME_CONFIG.CARD_GENERATION.DEFAULT_WEIGHTS,
   combineChance: number = GAME_CONFIG.CARD_GENERATION.DEFAULT_COMBINE_CHANCE,
+  characterId?: number,
 ): GameCard => {
-  const character = (characters as Character[])[
-    Math.floor(Math.random() * characters.length)
-  ];
+  const character = characterId
+    ? characterMap.get(characterId)
+    : (characters as Character[])[
+        Math.floor(Math.random() * characters.length)
+      ];
 
   const typeRoll = Math.random();
   let baseTypeId = "COMMON";
@@ -76,12 +79,17 @@ export const resolveCardStats = (card: GameCard) => {
     return acc * (type?.multiplier || 1);
   }, 1);
 
-  const baseIncome =
-    card.income !== undefined ? card.income : character.baseMultiplier;
   const basePower = card.power !== undefined ? card.power : character.basePower;
 
+  // New formula: (iq^1.5) * rarityMultiplier / 10
+  const calculatedIncome = Math.floor(
+    Math.pow(character.iq, 1.5) * combinedMultiplier * 0.1,
+  );
+
+  const income = card.income !== undefined ? card.income : calculatedIncome;
+
   return {
-    income: Math.floor(baseIncome * combinedMultiplier),
+    income,
     power: Math.floor(basePower * combinedMultiplier),
     character,
   };
@@ -93,7 +101,7 @@ export const resolveCardStats = (card: GameCard) => {
  * @returns Income per second
  */
 export const calculateCurrentIncome = (
-  state: Pick<GameState, "activeSlots" | "inventory" | "upgrades">,
+  state: Pick<GameState, "activeSlots" | "discoveredCards" | "upgrades">,
 ) => {
   const activeIncome = state.activeSlots.reduce(
     (sum: number, slot: GameCard | null) => {
@@ -103,11 +111,13 @@ export const calculateCurrentIncome = (
     0,
   );
 
-  // Optimized: Instead of filtering, use simple subtraction ($O(1)$ -> $O(N)$)
-  const activeCount = state.activeSlots.filter(Boolean).length;
-  const inactiveCards = Math.max(0, state.inventory.length - activeCount);
+  // Calculate total discoveries from Citadel Archives (characterId -> types[])
+  const totalDiscoveries = Object.values(state.discoveredCards).reduce(
+    (sum, types) => sum + types.length,
+    0,
+  );
 
-  const bonus = 1 + inactiveCards * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS;
+  const bonus = 1 + totalDiscoveries * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS;
 
   const upgradeBonus =
     1 + state.upgrades.seeds * GAME_CONFIG.UPGRADES.seeds.BONUS_PER_LEVEL;

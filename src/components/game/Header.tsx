@@ -8,16 +8,18 @@ import { GAME_CONFIG } from '@/config/gameConfig';
 export function Header() {
   const seeds = useGameStore((s) => s.seeds);
   const activeSlots = useGameStore((s) => s.activeSlots);
-  const inventory = useGameStore((s) => s.inventory);
+  const discoveredCards = useGameStore((s) => s.discoveredCards);
   const upgrades = useGameStore((s) => s.upgrades);
 
-  const activeCount = activeSlots.filter(Boolean).length;
-  const inactiveCards = Math.max(0, inventory.length - activeCount);
+  const totalDiscoveries = Object.values(discoveredCards).reduce(
+    (sum, types) => sum + types.length,
+    0,
+  );
   
-  const collectionBonus = Math.round(inactiveCards * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS * 100);
+  const collectionBonus = Math.round(totalDiscoveries * GAME_CONFIG.INCOME.INACTIVE_CARD_BONUS * 100);
   const labBonus = Math.round((upgrades.seeds || 0) * GAME_CONFIG.UPGRADES.seeds.BONUS_PER_LEVEL * 100);
   
-  const totalIncome = calculateCurrentIncome({ activeSlots, inventory, upgrades });
+  const totalIncome = calculateCurrentIncome({ activeSlots, discoveredCards, upgrades });
 
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/60 backdrop-blur-md">

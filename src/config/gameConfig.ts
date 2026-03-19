@@ -54,6 +54,7 @@ export const GAME_CONFIG = {
   DIMENSIONS: {
     BONUS_STEP: 5,
     BONUS_AMOUNT: 200, // (dimensionLevel + 1) * 200
+    INVENTORY_BONUS_PER_STEP: 5, // +5 slots every 5 levels
     SCALE_FACTOR: 0.25,
     MAX_LEVEL: 100,
     MAX_LEVEL_REWARD: 1000000,

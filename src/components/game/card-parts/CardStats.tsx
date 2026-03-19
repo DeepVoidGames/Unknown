@@ -1,12 +1,13 @@
-import { Leaf, Sword } from "lucide-react";
+import { Leaf, Sword, Brain } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
 
 interface CardStatsProps {
   income: number;
   power: number;
+  iq?: number;
 }
 
-export function CardStats({ income, power }: CardStatsProps) {
+export function CardStats({ income, power, iq }: CardStatsProps) {
   return (
     <div className="flex flex-col items-end">
       <div className="flex items-center gap-1">
@@ -21,6 +22,12 @@ export function CardStats({ income, power }: CardStatsProps) {
           {formatNumber(power)}
         </span>
       </div>
+      {iq !== undefined && (
+        <div className="flex items-center gap-1 mb-0.5">
+          <Brain className="w-2 h-2 text-purple-400 fill-purple-400/20" />
+          <span className="text-[9px] font-bold text-purple-400">{iq}</span>
+        </div>
+      )}
     </div>
   );
 }

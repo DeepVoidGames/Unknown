@@ -9,6 +9,7 @@ import Packs from "./pages/Packs";
 import Settings from "./pages/Settings";
 import Dimension from "./pages/Dimension";
 import Upgrades from "./pages/Upgrades";
+import Splicer from "./pages/Splicer";
 import NotFound from "./pages/NotFound";
 
 import { useEffect, useRef } from "react";
@@ -18,6 +19,7 @@ import { formatCurrency } from "@/lib/utils";
 import { GAME_CONFIG } from "@/config/gameConfig";
 import { initGA, trackPageView } from "@/lib/analytics";
 import { useLocation } from "react-router-dom";
+import { AutoOpenManager } from "@/components/game/AutoOpenManager";
 
 const queryClient = new QueryClient();
 
@@ -80,6 +82,7 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <AutoOpenManager />
         <BrowserRouter>
           <AnalyticsTracker />
           <Routes>
@@ -89,6 +92,7 @@ const App = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/dimension" element={<Dimension />} />
             <Route path="/upgrades" element={<Upgrades />} />
+            <Route path="/splicer" element={<Splicer />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

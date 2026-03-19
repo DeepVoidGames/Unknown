@@ -116,5 +116,22 @@ export const migrateGameStore = (persistedState: unknown, version: number) => {
     };
   }
 
+  if (version < 8) {
+    const discovered: Record<number, string[]> = { ...state.discoveredCards };
+    const inventory = state.inventory || [];
+    
+    inventory.forEach((card: any) => {
+      if (!card || !card.characterId) return;
+      const types = card.types || [];
+      const currentTypes = discovered[card.characterId] || [];
+      discovered[card.characterId] = [...new Set([...currentTypes, ...types])];
+    });
+
+    state = {
+      ...state,
+      discoveredCards: discovered,
+    };
+  }
+
   return state;
 };

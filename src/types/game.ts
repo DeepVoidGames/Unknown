@@ -16,7 +16,7 @@ export interface Character {
   origin: string;
   location: string;
   avatarId: number;
-  baseMultiplier: number;
+  iq: number;
   basePower: number;
   customImage?: string;
 }
@@ -44,5 +44,6 @@ export interface GameState {
     power: number;
     inventory: number;
   };
+  discoveredCards: Record<number, string[]>; // characterId -> array of rarity typeIds
   lastSaved: number;
 }
