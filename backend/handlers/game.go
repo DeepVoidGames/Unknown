@@ -16,7 +16,7 @@ import (
 type SaveRequest struct {
 	ID        string          `json:"id"`
 	Nickname  string          `json:"nickname"`
-	GameState models.GameState `json:"game_state"`
+	GameState json.RawMessage `json:"game_state"`
 	Signature string          `json:"signature"`
 }
 
@@ -33,14 +33,14 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stateJSON, err := json.Marshal(req.GameState)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to process state")
+	if !security.VerifyHMAC(req.GameState, req.Signature) {
+		respondWithError(w, http.StatusForbidden, "Invalid signature")
 		return
 	}
 
-	if !security.VerifyHMAC(stateJSON, req.Signature) {
-		respondWithError(w, http.StatusForbidden, "Invalid signature")
+	var newState models.GameState
+	if err := json.Unmarshal(req.GameState, &newState); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid game state format")
 		return
 	}
 
@@ -60,12 +60,12 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("DB error: %v", err)
 	}
 
-	if err := game.ValidateProgress(oldState, &req.GameState, lastUpdate); err != nil {
+	if err := game.ValidateProgress(oldState, &newState, lastUpdate); err != nil {
 		respondWithError(w, http.StatusForbidden, fmt.Sprintf("Anti-cheat: %v", err))
 		return
 	}
 
-	if err := database.SavePlayer(req.ID, req.Nickname, stateJSON); err != nil {
+	if err := database.SavePlayer(req.ID, req.Nickname, req.GameState); err != nil {
 		log.Printf("Save error: %v", err)
 		respondWithError(w, http.StatusInternalServerError, "Failed to save data")
 		return
@@ -91,13 +91,7 @@ func LoadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var state models.GameState
-	if err := json.Unmarshal(stateJSON, &state); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to parse data")
-		return
-	}
-
-	respondWithJSON(w, http.StatusOK, GenericResponse{Success: true, Data: state})
+	respondWithJSON(w, http.StatusOK, GenericResponse{Success: true, Data: json.RawMessage(stateJSON)})
 }
 
 func LeaderboardHandler(w http.ResponseWriter, r *http.Request) {

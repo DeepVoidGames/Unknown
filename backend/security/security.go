@@ -4,10 +4,19 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"os"
 	"time"
 )
 
-var SecretKey = []byte("morty-secret-key-change-me")
+var SecretKey = getSecretKey()
+
+func getSecretKey() []byte {
+	key := os.Getenv("GAME_SECRET")
+	if key == "" {
+		return []byte("love-u-rick-<3")
+	}
+	return []byte(key)
+}
 
 func VerifyHMAC(message []byte, signature string) bool {
 	h := hmac.New(sha256.New, SecretKey)

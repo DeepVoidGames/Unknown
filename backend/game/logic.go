@@ -9,7 +9,7 @@ import (
 // Constants for logical verification
 const (
 	MaxSeedsPerSecond   = 500.0 // Adjusted for "Seeds"
-	MaxNewCardsPerSave  = 20
+	MaxNewCardsPerSave  = 200
 )
 
 func ValidateProgress(oldState *models.GameState, newState *models.GameState, lastUpdate time.Time) error {
