@@ -23,3 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 package-lock.json
+
+*.db
+*.db-shm
+*.db-wal
+
+.env
+.env.local
+.env.*.local
